@@ -237,7 +237,7 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-6 text-sm text-gray-400">
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
             <p className="flex items-center gap-1">
               Made with{" "}
               <Heart className="w-4 h-4 text-red-400 fill-red-400 animate-pulse" />{" "}
@@ -247,7 +247,7 @@ const Footer = () => {
             <p>© {new Date().getFullYear()} devConnect. All rights reserved.</p>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center flex-wrap gap-6">
             <a
               href="#"
               className="text-sm text-gray-400 hover:text-emerald-400 transition-colors"

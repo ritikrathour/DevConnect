@@ -45,7 +45,7 @@ const testimonials: Testimonial[] = [
 
 const Testimonials = () => {
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-10 overflow-hidden">
       {/* linear background */}
       <div className="absolute inset-0 bg-linear-to-b from-transparent via-cyan-500/5 to-transparent" />
 

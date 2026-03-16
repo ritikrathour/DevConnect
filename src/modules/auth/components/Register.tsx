@@ -1,6 +1,7 @@
 "use client";
-
 import AnimateBackGrid from "@/components/design/AnimateBackGrid";
+import { registerSchema } from "@/schema/auth.schema";
+import axiosInstance from "@/services/axios.service";
 import {
   ArrowRight,
   Code2,
@@ -10,62 +11,54 @@ import {
   Shield,
   Zap,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import z from "zod";
 
 const Register = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
-
-  const validateForm = () => {
-    const newErrors: any = {};
-
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
-    } else if (formData.username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
+  const router = useRouter();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Registration data:", formData);
+    try {
+      setIsLoading(true);
+      // validation
+      const parsed = registerSchema.safeParse(formData);
+      if (!parsed.success) {
+        const { fieldErrors } = z.flattenError(parsed.error);
+        setErrors(fieldErrors);
+        return;
+      }
+      // make api call
+      const response = await axiosInstance.post("/auth/register", formData);
+      toast.success(response?.data?.message || "Registration Successfull!");
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+      });
       setIsLoading(false);
-      // Handle successful registration (redirect, etc.)
-    }, 1500);
+      router.push("/");
+    } catch (error: any) {
+      setIsLoading(false);
+      if (error.response) {
+        // API returned an error
+        toast.error(error?.response?.data.message);
+      } else if (error.request) {
+        // Network error
+        toast.error("Network error. Please try again.");
+      } else {
+        toast.error("Something went wrong.");
+      }
+    }
   };
 
   const handleChange = (e: any) => {
@@ -260,54 +253,13 @@ const Register = () => {
                 )}
               </div>
 
-              {/* Confirm Password */}
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium mb-2 text-gray-300"
-                >
-                  Confirm Password
-                </label>
-                {/* <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-white/5 border ${
-                      errors.confirmPassword
-                        ? "border-red-500"
-                        : "border-white/10"
-                    } rounded-lg focus:outline-none focus:border-emerald-400 transition-all placeholder-gray-600`}
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-                {errors.confirmPassword && (
-                  <p className="text-red-400 text-sm mt-1">
-                    {errors.confirmPassword}
-                  </p>
-                )} */}
-              </div>
-
               {/* Terms */}
               <div className="flex items-start gap-2">
                 <input
                   type="checkbox"
                   id="terms"
                   className="mt-1 w-4 h-4 bg-white/5 border border-white/10 rounded focus:ring-emerald-400 focus:ring-2"
-                  required
+                  // required
                 />
                 <label htmlFor="terms" className="text-sm text-gray-400">
                   I agree to the{" "}
@@ -331,7 +283,7 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+                className="w-full py-3 px-4 bg-linear-to-r cursor-pointer from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
               >
                 {isLoading ? (
                   <span>Creating Account...</span>

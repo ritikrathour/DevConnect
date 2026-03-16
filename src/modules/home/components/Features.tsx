@@ -88,20 +88,8 @@ const Features = () => {
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.6, -0.05, 0.01, 0.99],
-      },
-    },
-  };
-
   return (
-    <section id="features" className="relative py-32 overflow-hidden">
+    <section id="features" className="relative py-20 overflow-hidden">
       {/* Background linear */}
       <div className="absolute inset-0 bg-linear-to-b from-transparent via-emerald-500/5 to-transparent" />
 

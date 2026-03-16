@@ -70,7 +70,7 @@ function Counter({
 
 const Stats = () => {
   return (
-    <section className="relative py-32">
+    <section className="relative py-10">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div

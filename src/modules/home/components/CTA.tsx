@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const CTA = () => {
   return (
-    <section className="relative py-32 overflow-hidden w-full">
+    <section className="relative py-10 overflow-hidden w-full">
       {/* Animated background grid */}
       <motion.div
         className="absolute inset-0 opacity-10"

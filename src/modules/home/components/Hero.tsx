@@ -58,7 +58,7 @@ const Hero = () => {
 
       {/* Content */}
       <motion.div
-        className="relative z-10 container mx-auto px-4 py-8 text-center"
+        className="relative z-10 container mx-auto px-4 text-center py-4"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -97,14 +97,6 @@ const Hero = () => {
         {/* CTA Buttons */}
         <motion.div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link href="/register">
-            {/* <motion.button
-              className="group px-8 py-4 bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all flex items-center gap-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Get Started Free
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </motion.button> */}
             <Button
               iconPosition="right"
               icon={
@@ -116,70 +108,27 @@ const Hero = () => {
           </Link>
 
           <Link href="#features">
-            <motion.button
-              className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-400/50 text-white font-semibold rounded-lg transition-all backdrop-blur-sm"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Explore Features
-            </motion.button>
+            <Button>Explore Features</Button>
           </Link>
         </motion.div>
 
         {/* Feature Pills */}
-        <motion.div
-          //   variants={itemVariants}
-          className="mt-16 flex flex-wrap justify-center gap-4"
-        >
+        <div className="mt-16 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 items-center justify-center gap-4">
           {[
             "Real-time Collaboration",
             "Code Sharing",
             "Project Management",
             "Community Driven",
-          ].map((feature, index) => (
-            <motion.div
+          ].map((feature) => (
+            <div
               key={feature}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-gray-400 backdrop-blur-sm"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8 + index * 0.1 }}
-              whileHover={{
-                scale: 1.05,
-                borderColor: "rgba(52, 211, 153, 0.5)",
-              }}
+              className="px-4 py-2 sm:text-nowrap bg-white/5 border border-white/10 rounded-full text-sm text-gray-400 backdrop-blur-sm"
             >
               {feature}
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
-        >
-          <motion.div
-            className="w-6 h-10 border-2 border-emerald-400/30 rounded-full flex justify-center p-1"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
-          </motion.div>
-        </motion.div>
+        </div>
       </motion.div>
-
-      <style jsx>{`
-        @keyframes grid-move {
-          0% {
-            transform: translateY(0);
-          }
-          100% {
-            transform: translateY(80px);
-          }
-        }
-      `}</style>
     </section>
   );
 };

@@ -1,0 +1,68 @@
+ // Relations
+   // sentRequests     ConnectionRequest[] @relation("SentRequests")
+  // receivedRequests ConnectionRequest[] @relation("ReceivedRequests")
+  //sentMessages     Message[]           @relation("SentMessages")
+  //conversations    ConversationMember[]
+
+
+// ─── CONNECTION REQUEST ───────────────────────────────────
+
+model ConnectionRequest {
+  id        String           @id @default(cuid())
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  status ConnectionStatus @default(PENDING)
+
+  fromUserId String
+  toUserId   String
+
+  fromUser User @relation("SentRequests",   fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User @relation("ReceivedRequests", fields: [toUserId],   references: [id], onDelete: Cascade)
+
+  @@unique([fromUserId, toUserId]) // prevent duplicate requests
+  @@map("connection_requests")
+}
+
+// ─── CONVERSATION ─────────────────────────────────────────
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members  ConversationMember[]
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model ConversationMember {
+  id             String   @id @default(cuid())
+  joinedAt       DateTime @default(now())
+
+  userId         String
+  conversationId String
+
+  user         User         @relation(fields: [userId],         references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, conversationId])
+  @@map("conversation_members")
+}
+
+// ─── MESSAGE ──────────────────────────────────────────────
+
+// model Message {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  text           String @db.Text
+  senderId       String
+  conversationId String
+
+  sender       User         @relation("SentMessages",  fields: [senderId],       references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}

@@ -15,7 +15,7 @@ const companies = [
 
 const TrustedBy = () => {
   return (
-    <section className="relative py-20 border-y border-white/5 bg-white/2 overflow-x-hidden w-full">
+    <section className="relative py-10 border-y border-white/5 bg-white/2 overflow-x-hidden w-full">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
