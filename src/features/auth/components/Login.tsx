@@ -1,79 +1,63 @@
 "use client";
-import AnimateBackGrid from "@/components/design/AnimateBackGrid";
-import { registerSchema } from "@/schema/auth.schema";
-import axiosInstance from "@/services/axios.service";
-import {
-  ArrowRight,
-  Code2,
-  Eye,
-  EyeOff,
-  Link,
-  Shield,
-  Zap,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
+import AnimateBackGrid from "@/shared/components/design/AnimateBackGrid";
+import { ArrowRight, Code2, Eye, EyeOff, Shield, Zap } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
-import z from "zod";
 
-const Register = () => {
+const Login = () => {
   const [formData, setFormData] = useState({
-    username: "",
     email: "",
     password: "",
+    rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+
+  const validateForm = () => {
+    const newErrors: any = {};
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    try {
-      setIsLoading(true);
-      // validation
-      const parsed = registerSchema.safeParse(formData);
-      if (!parsed.success) {
-        const { fieldErrors } = z.flattenError(parsed.error);
-        setErrors(fieldErrors);
-        return;
-      }
-      // make api call
-      const response = await axiosInstance.post("/auth/register", formData);
-      toast.success(response?.data?.message || "Registration Successfull!");
-      setFormData({
-        username: "",
-        email: "",
-        password: "",
-      });
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      console.log("Login data:", formData);
       setIsLoading(false);
-      router.push("/");
-    } catch (error: any) {
-      setIsLoading(false);
-      if (error.response) {
-        // API returned an error
-        toast.error(error?.response?.data.message);
-      } else if (error.request) {
-        // Network error
-        toast.error("Network error. Please try again.");
-      } else {
-        toast.error("Something went wrong.");
-      }
-    }
+      // Handle successful login (redirect, etc.)
+    }, 1500);
   };
 
   const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
+    const { name, value, type, checked } = e.target;
+    setFormData((prev: any) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
     // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev: any) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
+    // if (errors[name]) {
+    //   setErrors(prev => ({
+    //     ...prev,
+    //     [name]: ''
+    //   }));
+    // }
   };
 
   return (
@@ -81,10 +65,10 @@ const Register = () => {
       {/* Animated background grid */}
       <AnimateBackGrid className="opacity-20" />
 
-      {/* Gradient orbs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl animate-pulse"></div>
+      {/* linear orbs */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
       <div
-        className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse"
+        className="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl animate-pulse"
         style={{ animationDelay: "1s" }}
       ></div>
 
@@ -93,15 +77,15 @@ const Register = () => {
         <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-16 border-r border-emerald-500/20">
           <div className="max-w-lg">
             <h2 className="text-5xl font-bold mb-6 leading-tight">
-              Join the Future of
+              Welcome Back to
               <span className="block text-transparent bg-clip-text bg-linear-to-r from-emerald-400 via-cyan-400 to-blue-400">
                 Developer Collaboration
               </span>
             </h2>
 
             <p className="text-gray-400 text-lg mb-12 leading-relaxed">
-              Connect with thousands of developers, share your projects, and
-              build the next generation of software together.
+              Continue building amazing projects and connecting with talented
+              developers from around the world.
             </p>
 
             <div className="space-y-6">
@@ -112,7 +96,7 @@ const Register = () => {
                 <div>
                   <h3 className="font-semibold mb-1">Lightning Fast</h3>
                   <p className="text-gray-500 text-sm">
-                    Optimized for developer productivity
+                    Pick up right where you left off
                   </p>
                 </div>
               </div>
@@ -124,7 +108,7 @@ const Register = () => {
                 <div>
                   <h3 className="font-semibold mb-1">Secure & Private</h3>
                   <p className="text-gray-500 text-sm">
-                    Enterprise-grade security for your code
+                    Your code is always protected
                   </p>
                 </div>
               </div>
@@ -136,7 +120,7 @@ const Register = () => {
                 <div>
                   <h3 className="font-semibold mb-1">Built for Developers</h3>
                   <p className="text-gray-500 text-sm">
-                    By developers, for developers
+                    Tools that work the way you do
                   </p>
                 </div>
               </div>
@@ -161,37 +145,13 @@ const Register = () => {
             </div>
 
             <div className="mb-8">
-              <h2 className="text-3xl font-bold mb-2">Create Account</h2>
+              <h2 className="text-3xl font-bold mb-2">Welcome Back</h2>
               <p className="text-gray-400">
-                Start your developer journey today
+                Sign in to continue your developer journey
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Username */}
-              <div>
-                <label
-                  htmlFor="username"
-                  className="block text-sm font-medium mb-2 text-gray-300"
-                >
-                  Username
-                </label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-3 bg-white/5 border ${
-                    errors.username ? "border-red-500" : "border-white/10"
-                  } rounded-lg focus:outline-none focus:border-emerald-400 transition-all placeholder-gray-600`}
-                  placeholder="johndoe"
-                />
-                {errors.username && (
-                  <p className="text-red-400 text-sm mt-1">{errors.username}</p>
-                )}
-              </div>
-
               {/* Email */}
               <div>
                 <label
@@ -207,7 +167,7 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 bg-white/5 border ${
-                    errors.email ? "border-red-500" : "border-white/10"
+                    errors?.email ? "border-red-500" : "border-white/10"
                   } rounded-lg focus:outline-none focus:border-emerald-400 transition-all placeholder-gray-600`}
                   placeholder="john@example.com"
                 />
@@ -253,59 +213,56 @@ const Register = () => {
                 )}
               </div>
 
-              {/* Terms */}
-              <div className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  className="mt-1 w-4 h-4 bg-white/5 border border-white/10 rounded focus:ring-emerald-400 focus:ring-2"
-                  // required
-                />
-                <label htmlFor="terms" className="text-sm text-gray-400">
-                  I agree to the{" "}
-                  <a
-                    href="#"
-                    className="text-emerald-400 hover:text-emerald-300 transition-colors"
-                  >
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a
-                    href="#"
-                    className="text-emerald-400 hover:text-emerald-300 transition-colors"
-                  >
-                    Privacy Policy
-                  </a>
-                </label>
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    name="rememberMe"
+                    checked={formData.rememberMe}
+                    onChange={handleChange}
+                    className="w-4 h-4 bg-white/5 border border-white/10 rounded focus:ring-emerald-400 focus:ring-2"
+                  />
+                  <label htmlFor="rememberMe" className="text-sm text-gray-400">
+                    Remember me
+                  </label>
+                </div>
+                <a
+                  href="/forgot-password"
+                  className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+                >
+                  Forgot password?
+                </a>
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 bg-linear-to-r cursor-pointer from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+                className="w-full py-3 px-4 bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
               >
                 {isLoading ? (
-                  <span>Creating Account...</span>
+                  <span>Signing In...</span>
                 ) : (
                   <>
-                    <span>Create Account</span>
+                    <span>Sign In</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </button>
             </form>
 
-            {/* Sign in link */}
+            {/* Sign up link */}
             <div className="mt-6 text-center">
               <p className="text-gray-400">
-                Already have an account?{" "}
-                <Link
-                  href="/auth/login"
+                Don't have an account?{" "}
+                <a
+                  href="/auth/register"
                   className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors"
                 >
-                  Sign in
-                </Link>
+                  Create one
+                </a>
               </p>
             </div>
 
@@ -384,4 +341,4 @@ const Register = () => {
     </div>
   );
 };
-export default Register;
+export default Login;

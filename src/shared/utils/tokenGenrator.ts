@@ -1,5 +1,5 @@
-import { ApiError } from "@/errors/ApiError";
-import { JWTPayload } from "./auth.types";
+import { ApiError } from "@/lib/errors/ApiError";
+import { JWTPayload } from "../../modules/auth/auth.types";
 import jwt from "jsonwebtoken";
 const ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET!;
@@ -34,9 +34,9 @@ export class TokenService {
       return payload;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
-        throw new ApiError("AccessToken exiored", 402);
+        throw new ApiError(403, "AccessToken exiored");
       }
-      throw new ApiError("Invalid access token", 402);
+      throw new ApiError(403, "Invalid access token");
     }
   }
   // ── Verify refresh Token ───────────────────
@@ -50,9 +50,9 @@ export class TokenService {
       return payload;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
-        throw new ApiError("Invalid or expired refresh token", 402);
+        throw new ApiError(403, "Invalid or expired refresh token");
       }
-      throw new ApiError("Invalid refresh token", 402);
+      throw new ApiError(403, "Invalid refresh token");
     }
   }
 }

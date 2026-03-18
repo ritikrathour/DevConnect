@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "../layout/Header";
-import Footer from "../layout/Footer";
-import PageTransition from "../components/common/PageTransition";
+import Header from "../appLayout/Header";
+import Footer from "../appLayout/Footer";
+import PageTransition from "../shared/components/common/PageTransition";
 import { Toaster } from "react-hot-toast";
-import QueryProvider from "@/tanstack/provider";
+import QueryProvider from "@/lib/tanstack/provider";
+
+import { Provider } from "react-redux";
+import { Store } from "@/stores/store";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,6 +34,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* <Provider store={Store}> */}
         <QueryProvider>
           <Header />
           <PageTransition>{children}</PageTransition>
@@ -47,6 +51,7 @@ export default function RootLayout({
             }}
           />
         </QueryProvider>
+        {/* </Provider> */}
       </body>
     </html>
   );

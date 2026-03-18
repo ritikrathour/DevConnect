@@ -1,7 +1,7 @@
 "use client";
 
-import { authService } from "@/services/auth.service";
-import { authKeys } from "@/tanstack/queryKeys/authKeys";
+import { authService } from "@/features/auth/services/auth.service";
+import { authKeys } from "@/lib/tanstack/queryKeys/authKeys";
 import { useQuery } from "@tanstack/react-query";
 
 export const useAuth = () => {

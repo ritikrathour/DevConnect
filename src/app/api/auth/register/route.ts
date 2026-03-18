@@ -1,7 +1,7 @@
 import { AsyncHandler } from "@/lib/AsyncHandler";
 import { logger } from "@/lib/logger";
 import { registerUser } from "@/modules/auth/auth.service";
-import { registerSchema } from "@/schema/auth.schema";
+import { registerSchema } from "@/modules/auth/auth.schema";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import z from "zod";

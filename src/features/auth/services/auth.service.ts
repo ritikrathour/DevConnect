@@ -1,4 +1,4 @@
-import axiosInstance from "./axios.service";
+import axiosInstance from "../../../lib/axios.service";
 
 export const authService = {
   me: async () => {

@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { AsyncHandler } from "@/lib/AsyncHandler";
-import { TokenService } from "@/modules/auth/token.service";
+import { TokenService } from "@/shared/utils/tokenGenrator";
 
 export const POST = AsyncHandler(async (req: NextRequest) => {
   console.log("calll ok");

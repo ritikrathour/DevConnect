@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/common/ui/Button";
-import AnimateBackGrid from "@/components/design/AnimateBackGrid";
+import { Button } from "@/shared/components/common/ui/Button";
+import AnimateBackGrid from "@/shared/components/design/AnimateBackGrid";
 import { motion } from "framer-motion";
 import { ArrowRight, Code2, Sparkles } from "lucide-react";
 import Link from "next/link";

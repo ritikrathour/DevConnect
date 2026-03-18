@@ -5,7 +5,7 @@ import {
   Stats,
   Testimonials,
   TrustedBy,
-} from "@/modules/home/index";
+} from "@/features/home/index";
 
 export default function Home() {
   return (

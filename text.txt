@@ -66,3 +66,178 @@ model ConversationMember {
 
   @@map("messages")
 }
+
+
+src
+│
+├── app/                         # Next.js App Router
+│   ├── (auth)/
+│   │   ├── login/page.tsx
+│   │   └── register/page.tsx
+│   │
+│   ├── (main)/
+│   │   ├── feed/page.tsx
+│   │   ├── profile/[username]/page.tsx
+│   │   └── connections/page.tsx
+│   │
+│   ├── api/                     # Next.js API routes (thin controllers)
+│   │   ├── auth/
+│   │   │   └── login/route.ts
+│   │   ├── users/
+│   │   │   └── route.ts
+│   │   └── posts/
+│   │       └── route.ts
+│   │
+│   ├── layout.tsx
+│   └── page.tsx
+│
+│
+├── modules/                     # Domain-driven backend modules
+│   │
+│   ├── auth/
+│   │   ├── auth.controller.ts
+│   │   ├── auth.service.ts
+│   │   ├── auth.repository.ts
+│   │   ├── auth.schema.ts
+│   │   ├── auth.types.ts
+│   │   └── auth.constants.ts
+│   │
+│   ├── user/
+│   │   ├── user.controller.ts
+│   │   ├── user.service.ts
+│   │   ├── user.repository.ts
+│   │   ├── user.schema.ts
+│   │   └── user.types.ts
+│   │
+│   ├── post/
+│   │   ├── post.controller.ts
+│   │   ├── post.service.ts
+│   │   ├── post.repository.ts
+│   │   ├── post.schema.ts
+│   │   └── post.types.ts
+│   │
+│   ├── connection/
+│   │   ├── connection.controller.ts
+│   │   ├── connection.service.ts
+│   │   └── connection.repository.ts
+│   │
+│   └── notification/
+│       ├── notification.service.ts
+│       └── notification.repository.ts
+│
+│
+├── features/                    # UI Feature-based architecture
+│   │
+│   ├── auth/
+│   │   ├── components/
+│   │   │   ├── LoginForm.tsx
+│   │   │   └── RegisterForm.tsx
+│   │   │
+│   │   ├── hooks/
+│   │   │   └── useLogin.ts
+│   │   │
+│   │   ├── api/
+│   │   │   └── auth.api.ts
+│   │   │
+│   │   └── store/
+│   │       └── authSlice.ts
+│   │
+│   ├── feed/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   └── api/
+│   │
+│   ├── profile/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   └── api/
+│   │
+│   └── connections/
+│       ├── components/
+│       ├── hooks/
+│       └── api/
+│
+│
+├── shared/                      # Global reusable logic
+│   │
+│   ├── components/              # reusable UI
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   ├── Modal.tsx
+│   │   └── Avatar.tsx
+│   │
+│   ├── hooks/
+│   │   ├── useDebounce.ts
+│   │   └── useAuth.ts
+│   │
+│   ├── utils/
+│   │   ├── apiErrorHandler.ts
+│   │   ├── formatDate.ts
+│   │   └── sleep.ts
+│   │
+│   ├── constants/
+│   │   ├── routes.ts
+│   │   └── app.constants.ts
+│   │
+│   └── types/
+│       └── global.types.ts
+│
+│
+├── store/                       # Redux Toolkit global store
+│   ├── store.ts
+│   ├── rootReducer.ts
+│   └── providers/
+│       └── ReduxProvider.tsx
+│
+│
+├── lib/                         # Infrastructure layer
+│   │
+│   ├── prisma/
+│   │   └── prisma.ts
+│   │
+│   ├── redis/
+│   │   └── redisClient.ts
+│   │
+│   ├── logger/
+│   │   └── logger.ts
+│   │
+│   ├── axios/
+│   │   └── axiosInstance.ts
+│   │
+│   ├── tanstack/
+│   │   └── queryClient.ts
+│   │
+│   └── proxy/
+│       └── apiProxy.ts
+│
+│
+├── validations/                 # Zod validation layer
+│   ├── auth.validation.ts
+│   ├── user.validation.ts
+│   └── post.validation.ts
+│
+│
+├── middleware/                  # Next middleware
+│   ├── auth.middleware.ts
+│   └── rateLimit.middleware.ts
+│
+│
+├── config/                      # environment configs
+│   ├── env.ts
+│   ├── redis.config.ts
+│   └── auth.config.ts
+│
+│
+├── prisma/                      # Prisma ORM
+│   ├── schema.prisma
+│   └── migrations/
+│
+│
+├── types/                       # Global TS types
+│   ├── api.types.ts
+│   └── auth.types.ts
+│
+│
+└── tests/                       # testing
+    ├── unit/
+    └── integration/

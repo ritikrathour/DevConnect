@@ -1,7 +1,7 @@
 import { ApiError } from "next/dist/server/api-utils";
 import { createUser, findUserByEmail } from "./auth.repository";
 import { HashedPassword } from "@/lib/password";
-import { TokenService } from "./token.service";
+import { TokenService } from "../../shared/utils/tokenGenrator";
 import { logger } from "@/lib/logger";
 
 export const registerUser = async (data: any) => {
