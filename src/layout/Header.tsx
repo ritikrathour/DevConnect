@@ -11,11 +11,12 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-
+  const { data, isError, error } = useAuth().me();
   const notifications = [
     { id: 1, title: "New connection request", time: "5m ago", unread: true },
     { id: 2, title: "Project update from @john", time: "1h ago", unread: true },

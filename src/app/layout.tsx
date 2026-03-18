@@ -4,8 +4,8 @@ import "./globals.css";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import PageTransition from "../components/common/PageTransition";
-import { Providers } from "../tanstack/provider";
 import { Toaster } from "react-hot-toast";
+import QueryProvider from "@/tanstack/provider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,7 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>
+        <QueryProvider>
           <Header />
           <PageTransition>{children}</PageTransition>
           <Footer />
@@ -46,7 +46,7 @@ export default function RootLayout({
               },
             }}
           />
-        </Providers>
+        </QueryProvider>
       </body>
     </html>
   );
