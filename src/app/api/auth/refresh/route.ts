@@ -2,11 +2,9 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { AsyncHandler } from "@/lib/AsyncHandler";
-import { TokenService } from "@/shared/utils/tokenGenrator";
+import { TokenService } from "@/shared/utils/tokenService";
 
 export const POST = AsyncHandler(async (req: NextRequest) => {
-  console.log("calll ok");
-
   const refreshToken = req.cookies.get("devConnect_refreshToken")?.value;
   if (!refreshToken) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -25,7 +23,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60,
     });
     return NextResponse.json({
       success: true,

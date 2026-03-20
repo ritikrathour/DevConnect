@@ -2,7 +2,6 @@ import { ApiError } from "@/lib/errors/ApiError";
 import { AsyncHandler } from "@/lib/AsyncHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-
 export const GET = AsyncHandler(async (req: NextRequest) => {
   const email = req.headers.get("x-user-email");
   if (!email) {

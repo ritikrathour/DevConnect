@@ -1,7 +1,7 @@
 import { AsyncHandler } from "@/lib/AsyncHandler";
 import { logger } from "@/lib/logger";
-import { registerUser } from "@/modules/auth/auth.service";
 import { registerSchema } from "@/modules/auth/auth.schema";
+import { AuthService } from "@/modules/auth/auth.service";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import z from "zod";
@@ -22,7 +22,9 @@ export const POST = AsyncHandler(async (req: Request) => {
     );
   }
   // check exist user by email
-  const { accessToken, refreshToken, user } = await registerUser(parsed.data);
+  const { accessToken, refreshToken, user } = await AuthService.registerUser(
+    parsed.data,
+  );
   // set cookies
   logger.info("setting the cookies");
   const storeCookies = await cookies();
@@ -31,7 +33,7 @@ export const POST = AsyncHandler(async (req: Request) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     path: "/",
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: 24 * 60 * 60,
   });
   storeCookies.set("devConnect_refreshToken", refreshToken, {
     httpOnly: true,

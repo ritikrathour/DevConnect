@@ -9,6 +9,7 @@ import QueryProvider from "@/lib/tanstack/provider";
 
 import { Provider } from "react-redux";
 import { Store } from "@/stores/store";
+import ReduxProvider from "@/stores/provider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,24 +35,24 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* <Provider store={Store}> */}
-        <QueryProvider>
-          <Header />
-          <PageTransition>{children}</PageTransition>
-          <Footer />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: "#333",
-                color: "#fff",
-                fontSize: "12px",
-              },
-            }}
-          />
-        </QueryProvider>
-        {/* </Provider> */}
+        <ReduxProvider>
+          <QueryProvider>
+            <Header />
+            <PageTransition>{children}</PageTransition>
+            <Footer />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: "#333",
+                  color: "#fff",
+                  fontSize: "12px",
+                },
+              }}
+            />
+          </QueryProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

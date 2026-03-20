@@ -12,11 +12,12 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import Link from "next/link";
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const { data: user, isError, error } = useAuth().me();
+  const { data: user } = useAuth().me();
   console.log(user?.data);
 
   const notifications = [
@@ -29,9 +30,7 @@ const Header = () => {
       unread: false,
     },
   ];
-
   const unreadCount = notifications.filter((n) => n.unread).length;
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-emerald-500/20 bg-[#0a0a0f]/95 backdrop-blur-xl">
       {/* Top gradient line */}
@@ -41,7 +40,7 @@ const Header = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-8">
-            <a href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-3 group">
               <div className="w-10 h-10 bg-linear-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Code2 className="w-6 h-6 text-black" />
               </div>
@@ -51,35 +50,37 @@ const Header = () => {
                   Connect
                 </span>
               </span>
-            </a>
+            </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
-              <a
-                href="/explore"
-                className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-              >
-                Explore
-              </a>
-              <a
-                href="/projects"
-                className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-              >
-                Projects
-              </a>
-              <a
-                href="/developers"
-                className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-              >
-                Developers
-              </a>
-              <a
-                href="/community"
-                className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-              >
-                Community
-              </a>
-            </nav>
+            {user?.data && (
+              <nav className="hidden md:flex items-center gap-1">
+                <a
+                  href="/explore"
+                  className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                >
+                  Explore
+                </a>
+                <a
+                  href="/projects"
+                  className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                >
+                  Projects
+                </a>
+                <a
+                  href="/developers"
+                  className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                >
+                  Developers
+                </a>
+                <a
+                  href="/community"
+                  className="px-4 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                >
+                  Community
+                </a>
+              </nav>
+            )}
           </div>
 
           {/* Search Bar - Desktop */}
@@ -104,105 +105,113 @@ const Header = () => {
               <Search className="w-5 h-5" />
             </button>
 
-            {/* Notifications */}
-            <div className="relative">
-              <button
-                onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className="relative p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-              >
-                <Bell className="w-5 h-5" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                )}
-              </button>
-
-              {/* Notifications Dropdown */}
-              {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-[#0f0f15] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="p-4 border-b border-white/10">
-                    <h3 className="font-semibold">Notifications</h3>
+            {user?.data ? (
+              <>
+                <div className="relative">
+                  <button
+                    onClick={() => setNotificationsOpen(!notificationsOpen)}
+                    className="relative p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                  >
+                    <Bell className="w-5 h-5" />
                     {unreadCount > 0 && (
-                      <p className="text-xs text-gray-400 mt-1">
-                        {unreadCount} unread
-                      </p>
+                      <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
                     )}
-                  </div>
-                  <div className="max-h-96 overflow-y-auto">
-                    {notifications.map((notif) => (
-                      <div
-                        key={notif.id}
-                        className={`p-4 hover:bg-white/5 transition-colors cursor-pointer border-b border-white/5 ${
-                          notif.unread ? "bg-emerald-500/5" : ""
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <p className="text-sm">{notif.title}</p>
-                          {notif.unread && (
-                            <span className="w-2 h-2 bg-emerald-400 rounded-full mt-1 shrink-0"></span>
-                          )}
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {notif.time}
+                  </button>
+
+                  {/* Notifications Dropdown  */}
+                  {notificationsOpen && (
+                    <div className="absolute right-0 mt-2 w-80 bg-[#0f0f15] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="p-4 border-b border-white/10">
+                        <h3 className="font-semibold">Notifications</h3>
+                        {unreadCount > 0 && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            {unreadCount} unread
+                          </p>
+                        )}
+                      </div>
+                      <div className="max-h-96 overflow-y-auto">
+                        {notifications.map((notif) => (
+                          <div
+                            key={notif.id}
+                            className={`p-4 hover:bg-white/5 transition-colors cursor-pointer border-b border-white/5 ${
+                              notif.unread ? "bg-emerald-500/5" : ""
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <p className="text-sm">{notif.title}</p>
+                              {notif.unread && (
+                                <span className="w-2 h-2 bg-emerald-400 rounded-full mt-1 shrink-0"></span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {notif.time}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="p-3 border-t border-white/10">
+                        <a
+                          href="/notifications"
+                          className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+                        >
+                          View all notifications
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="relative">
+                  <button
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center gap-2 p-1 pr-3 hover:bg-white/5 rounded-lg transition-all"
+                  >
+                    <div className="w-8 h-8 bg-linear-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center">
+                      <User className="w-4 h-4 text-black" />
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-gray-400 hidden sm:block" />
+                  </button>
+                  {/* User Dropdown */}
+                  {userDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-64 bg-[#0f0f15] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="p-4 border-b border-white/10">
+                        <p className="font-semibold capitalize">
+                          {user?.data && user?.data?.username}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          {user?.data && user?.data?.email}
                         </p>
                       </div>
-                    ))}
-                  </div>
-                  <div className="p-3 border-t border-white/10">
-                    <a
-                      href="/notifications"
-                      className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-                    >
-                      View all notifications
-                    </a>
-                  </div>
+                      <div className="py-2">
+                        <Link
+                          href="/profile"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors"
+                        >
+                          <User className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm">Profile</span>
+                        </Link>
+                        <a
+                          href="/settings"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors"
+                        >
+                          <Settings className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm">Settings</span>
+                        </a>
+                      </div>
+                      <div className="border-t border-white/10 py-2">
+                        <button className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors w-full text-red-400">
+                          <LogOut className="w-4 h-4" />
+                          <span className="text-sm">Sign Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-
-            {/* User Menu */}
-            <div className="relative">
-              <button
-                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 p-1 pr-3 hover:bg-white/5 rounded-lg transition-all"
-              >
-                <div className="w-8 h-8 bg-linear-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center">
-                  <User className="w-4 h-4 text-black" />
-                </div>
-                <ChevronDown className="w-4 h-4 text-gray-400 hidden sm:block" />
-              </button>
-
-              {/* User Dropdown */}
-              {userDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-[#0f0f15] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="p-4 border-b border-white/10">
-                    <p className="font-semibold">John Doe</p>
-                    <p className="text-sm text-gray-400">@johndoe</p>
-                  </div>
-                  <div className="py-2">
-                    <a
-                      href="/profile"
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors"
-                    >
-                      <User className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm">Profile</span>
-                    </a>
-                    <a
-                      href="/settings"
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors"
-                    >
-                      <Settings className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm">Settings</span>
-                    </a>
-                  </div>
-                  <div className="border-t border-white/10 py-2">
-                    <button className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors w-full text-red-400">
-                      <LogOut className="w-4 h-4" />
-                      <span className="text-sm">Sign Out</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <div className="w-8 h-8 bg-linear-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center">
+                <User className="w-4 h-4 text-black" />
+              </div>
+            )}
 
             {/* Mobile Menu Button */}
             <button

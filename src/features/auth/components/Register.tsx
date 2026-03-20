@@ -2,19 +2,12 @@
 import AnimateBackGrid from "@/shared/components/design/AnimateBackGrid";
 import { registerSchema } from "@/modules/auth/auth.schema";
 import axiosInstance from "@/lib/axios.service";
-import {
-  ArrowRight,
-  Code2,
-  Eye,
-  EyeOff,
-  Link,
-  Shield,
-  Zap,
-} from "lucide-react";
+import { ArrowRight, Code2, Eye, EyeOff, Shield, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import z from "zod";
+import Link from "next/link";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +22,6 @@ const Register = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      setIsLoading(true);
       // validation
       const parsed = registerSchema.safeParse(formData);
       if (!parsed.success) {
@@ -37,6 +29,7 @@ const Register = () => {
         setErrors(fieldErrors);
         return;
       }
+      setIsLoading(true);
       // make api call
       const response = await axiosInstance.post("/auth/register", formData);
       toast.success(response?.data?.message || "Registration Successfull!");
@@ -180,6 +173,7 @@ const Register = () => {
                   type="text"
                   id="username"
                   name="username"
+                  autoComplete="off"
                   value={formData.username}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 bg-white/5 border ${
@@ -204,6 +198,7 @@ const Register = () => {
                   type="email"
                   id="email"
                   name="email"
+                  autoComplete="off"
                   value={formData.email}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 bg-white/5 border ${
@@ -270,12 +265,12 @@ const Register = () => {
                     Terms of Service
                   </a>{" "}
                   and{" "}
-                  <a
+                  <Link
                     href="#"
                     className="text-emerald-400 hover:text-emerald-300 transition-colors"
                   >
                     Privacy Policy
-                  </a>
+                  </Link>
                 </label>
               </div>
 

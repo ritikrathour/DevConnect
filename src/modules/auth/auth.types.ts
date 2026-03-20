@@ -1,7 +1,7 @@
 export interface JWTPayload {
-  sub: string; // userId
+  sub?: string; // userId
   email: string;
-  role: UserRole;
+  role?: UserRole;
   sessionId?: string; // Redis session key
   iat?: number;
   exp?: number;

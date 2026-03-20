@@ -3,7 +3,7 @@ import { JWTPayload } from "../../modules/auth/auth.types";
 import jwt from "jsonwebtoken";
 const ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET!;
-const ACCESS_TOKEN_TTL = 15 * 60;
+const ACCESS_TOKEN_TTL = 24 * 60 * 60;
 
 export class TokenService {
   // ── Generate Access Token ─────────────────

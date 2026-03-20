@@ -1,7 +1,13 @@
 "use client";
+import axiosInstance from "@/lib/axios.service";
+import { loginSchema } from "@/modules/auth/auth.schema";
 import AnimateBackGrid from "@/shared/components/design/AnimateBackGrid";
 import { ArrowRight, Code2, Eye, EyeOff, Shield, Zap } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import z from "zod";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -12,37 +18,33 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
-
-  const validateForm = () => {
-    const newErrors: any = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
+  const router = useRouter();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Login data:", formData);
+    // validation
+    const parsed = loginSchema.safeParse(formData);
+    if (!parsed.success) {
+      const { fieldErrors } = z.flattenError(parsed.error);
+      setErrors(fieldErrors);
+      return;
+    }
+    try {
+      setIsLoading(true);
+      // make api call
+      const response = await axiosInstance.post("/auth/login", formData);
+      toast.success(response?.data?.message || "Login Successfull!");
+      setFormData({
+        password: "",
+        email: "",
+        rememberMe: false,
+      });
       setIsLoading(false);
-      // Handle successful login (redirect, etc.)
-    }, 1500);
+      router.push("/");
+    } catch (error: any) {
+      console.log(error?.response?.data?.message);
+      setIsLoading(false);
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    }
   };
 
   const handleChange = (e: any) => {
@@ -52,12 +54,12 @@ const Login = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
     // Clear error when user starts typing
-    // if (errors[name]) {
-    //   setErrors(prev => ({
-    //     ...prev,
-    //     [name]: ''
-    //   }));
-    // }
+    if (errors[name]) {
+      setErrors((prev: any) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
   };
 
   return (
@@ -164,6 +166,7 @@ const Login = () => {
                   type="email"
                   id="email"
                   name="email"
+                  autoComplete="off"
                   value={formData.email}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 bg-white/5 border ${
@@ -228,12 +231,12 @@ const Login = () => {
                     Remember me
                   </label>
                 </div>
-                <a
-                  href="/forgot-password"
+                <Link
+                  href="#"
                   className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
                 >
                   Forgot password?
-                </a>
+                </Link>
               </div>
 
               {/* Submit Button */}
@@ -257,12 +260,12 @@ const Login = () => {
             <div className="mt-6 text-center">
               <p className="text-gray-400">
                 Don't have an account?{" "}
-                <a
+                <Link
                   href="/auth/register"
                   className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors"
                 >
                   Create one
-                </a>
+                </Link>
               </p>
             </div>
 
