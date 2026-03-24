@@ -208,9 +208,12 @@ const Header = () => {
                 </div>
               </>
             ) : (
-              <div className="w-8 h-8 bg-linear-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center">
+              <Link
+                href="/auth/login"
+                className="w-8 h-8 bg-linear-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center"
+              >
                 <User className="w-4 h-4 text-black" />
-              </div>
+              </Link>
             )}
 
             {/* Mobile Menu Button */}

@@ -1,5 +1,5 @@
 "use client";
-import AnimateBackGrid from "@/shared/components/design/AnimateBackGrid";
+import AnimateBackGrid from "@/shared/components/AnimateBackGrid";
 import { registerSchema } from "@/modules/auth/auth.schema";
 import axiosInstance from "@/lib/axios.service";
 import { ArrowRight, Code2, Eye, EyeOff, Shield, Zap } from "lucide-react";

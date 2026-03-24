@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "../appLayout/Header";
 import Footer from "../appLayout/Footer";
-import PageTransition from "../shared/components/common/PageTransition";
+import PageTransition from "../shared/components/PageTransition";
 import { Toaster } from "react-hot-toast";
 import QueryProvider from "@/lib/tanstack/provider";
 

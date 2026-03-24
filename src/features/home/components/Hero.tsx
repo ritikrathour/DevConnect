@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/shared/components/common/ui/Button";
-import AnimateBackGrid from "@/shared/components/design/AnimateBackGrid";
+import { Button } from "@/shared/components/Button";
+import AnimateBackGrid from "@/shared/components/AnimateBackGrid";
 import { motion } from "framer-motion";
 import { ArrowRight, Code2, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -95,9 +95,10 @@ const Hero = () => {
         </motion.p>
 
         {/* CTA Buttons */}
-        <motion.div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link href="/register">
             <Button
+              variant="secondary"
               iconPosition="right"
               icon={
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -108,9 +109,9 @@ const Hero = () => {
           </Link>
 
           <Link href="#features">
-            <Button>Explore Features</Button>
+            <Button variant="secondary">Explore Features</Button>
           </Link>
-        </motion.div>
+        </div>
 
         {/* Feature Pills */}
         <div className="mt-16 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 items-center justify-center gap-4">
