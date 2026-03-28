@@ -32,7 +32,7 @@ export default function ProfileTabs({
       transition={{ delay: 0.5, duration: 0.6 }}
       className="mt-8 border-b border-white/10"
     >
-      <div className="flex gap-2">
+      <div className="flex gap-2 overflow-x-scroll scrollBarNone">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

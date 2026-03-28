@@ -1,84 +1,127 @@
 "use client";
-
-import { forwardRef, ButtonHTMLAttributes, ReactNode } from "react";
-import { motion } from "framer-motion";
 import clsx from "clsx";
+import { ButtonHTMLAttributes, ReactNode } from "react";
+import { motion } from "framer-motion";
 
-export type ButtonVariant =
+//  button type
+type ButtonVariant =
   | "primary"
   | "secondary"
   | "outline"
+  | "ghost"
+  | "glass"
   | "danger"
-  | "ghost";
-
-export type ButtonSize = "sm" | "md" | "lg";
-
-export type IconPosition = "left" | "right";
+  | "dark"
+  | "dangerLight";
+type ButtonSize = "sm" | "md" | "lg";
+type IconPosition = "left" | "right";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
+  type: "submit" | "reset" | "button";
   size?: ButtonSize;
   isLoading?: boolean;
   iconPosition?: IconPosition;
   icon?: ReactNode;
   children?: ReactNode;
-  type?: "submit" | "reset" | "button";
 }
-const variantClasses: Record<ButtonVariant, string> = {
+// button.styles
+const buttonBase =
+  "inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 outline-none disabled:opacity-90 disabled:cursor-not-allowed relative overflow-hidden cursor-pointer ";
+
+const buttonVariants = {
   primary:
     "bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black",
   secondary: "bg-white/5 hover:bg-white/10 border border-white/10",
   outline: "border border-gray-300 text-gray-700 hover:bg-gray-100",
-  danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
-  ghost: "text-gray-700 hover:bg-gray-100",
+  ghost: "bg-transparent text-gray-700 hover:bg-gray-100",
+  danger: "bg-red-600 text-white hover:bg-red-700",
+  dangerLight: "text-red-600 hover:bg-red-50 p-2 rounded-lg transition",
+  dark: "bg-[#173334] text-white hover:bg-[#1e4243]",
+  glass:
+    "bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:shadow-[0_4px_30px_rgba(255,255,255,0.15)]",
 };
 
-const sizeClasses: Record<ButtonSize, string> = {
-  sm: "px-3 py-1.5 text-sm",
-  md: "px-4 py-2 text-sm",
-  lg: "px-6 py-3 text-base",
+const buttonSizes = {
+  sm: "px-3 py-1 text-sm",
+  md: "px-4 py-2 text-base",
+  lg: "px-5 py-3 text-lg",
 };
+// Glassy reflection effect on hover
+const reflectionEffect = `
+    before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br
+    before:from-white/40 before:to-transparent before:opacity-0
+    hover:before:opacity-20 before:transition-opacity before:duration-300
+  `;
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({
-    variant = "primary",
-    size = "md",
-    isLoading = false,
-    iconPosition = "left",
-    icon,
-    children,
-    type = "button",
-    className,
-    disabled,
-  }) => {
-    return (
-      <motion.button
-        whileTap={{ scale: 0.95 }}
-        type={type}
-        disabled={disabled || isLoading}
-        aria-busy={isLoading}
+export const Button: React.FC<ButtonProps> = ({
+  type,
+  variant = "primary",
+  size = "md",
+  isLoading = false,
+  icon,
+  iconPosition = "left",
+  children,
+  className,
+  ...props
+}) => {
+  return (
+    <motion.button
+      className={clsx(
+        buttonBase,
+        buttonVariants[variant],
+        buttonSizes[size],
+        reflectionEffect,
+        className,
+      )}
+      type={type}
+      disabled={isLoading || props.disabled}
+    >
+      {isLoading ? (
+        <span className="flex items-center gap-2">
+          <svg
+            className="animate-spin h-4 w-4 text-current"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a12 12 0 00-12 12h4z"
+            />
+          </svg>
+          Loading...
+        </span>
+      ) : (
+        <div
+          className={clsx(
+            "flex items-center gap-2",
+            iconPosition === "right" && "flex-row-reverse",
+          )}
+        >
+          {icon && <span className="text-lg">{icon}</span>}
+          {children}
+        </div>
+      )}
+      {/* Soft glow pulse animation when hovered */}
+      <span
         className={clsx(
-          "inline-flex items-center justify-center gap-2 rounded-lg py-4 duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed px-8  text-white font-semibold  transition-all backdrop-blur-sm",
-          variantClasses[variant],
-          sizeClasses[size],
-          className,
+          "absolute inset-0 rounded-xl transition-all duration-500 ease-in-out opacity-0",
+          "hover:opacity-30",
+          variant === "primary" && "bg-blue-400/30",
+          variant === "danger" && "bg-red-400/30",
+          variant === "glass" && "bg-white/10",
         )}
-      >
-        {isLoading ? (
-          <span className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-        ) : (
-          icon &&
-          iconPosition === "left" && <span className="mr-2">{icon}</span>
-        )}
-
-        {children}
-
-        {!isLoading && icon && iconPosition === "right" && (
-          <span className="ml-2">{icon}</span>
-        )}
-      </motion.button>
-    );
-  },
-);
-
-Button.displayName = "Button";
+      />
+    </motion.button>
+  );
+};

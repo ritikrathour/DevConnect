@@ -1,5 +1,4 @@
 "use client";
-
 import { motion } from "framer-motion";
 import {
   Code2,
@@ -81,8 +80,6 @@ export default function ProfileSkills() {
       className="space-y-6"
     >
       <h2 className="text-2xl font-bold">Skills & Technologies</h2>
-
-      {/* Skill Categories */}
       {skillCategories.map((category, categoryIndex) => {
         const Icon = category.icon;
         return (
@@ -135,7 +132,6 @@ export default function ProfileSkills() {
           </motion.div>
         );
       })}
-
       {/* Additional Skills */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -163,7 +159,6 @@ export default function ProfileSkills() {
           })}
         </div>
       </motion.div>
-
       {/* Badges */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

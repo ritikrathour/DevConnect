@@ -7,9 +7,6 @@ import ProfileSkills from "@/features/profile/components/ProfileSkills";
 import ProfileStats from "@/features/profile/components/ProfileStats";
 import ProfileTabs from "@/features/profile/components/ProfileTabs";
 import { motion } from "framer-motion";
-// import ProfileActivity from '@/components/profile/ProfileActivity';
-// import ProfileProjects from '@/components/profile/ProfileProjects';
-// import ProfileSkills from '@/components/profile/ProfileSkills';
 import { useState } from "react";
 
 export type TabType = "overview" | "projects" | "activity" | "repositories";
@@ -52,7 +49,6 @@ export default function ProfilePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
             <div className="lg:col-span-2 space-y-8">
               <ProfileProjects />
-              <ProfileActivity />
             </div>
             <div>
               <ProfileSkills />
@@ -81,7 +77,7 @@ export default function ProfilePage() {
         )}
       </div>
 
-      <style jsx>{`
+      {/* <style jsx>{`
         @keyframes grid-move {
           0% {
             transform: translateY(0);
@@ -90,7 +86,7 @@ export default function ProfilePage() {
             transform: translateY(50px);
           }
         }
-      `}</style>
+      `}</style> */}
     </motion.main>
   );
 }
