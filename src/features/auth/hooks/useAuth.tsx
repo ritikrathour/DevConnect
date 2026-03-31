@@ -16,7 +16,7 @@ export const useAuth = () => {
       retry: 1,
     });
     useEffect(() => {
-      dispatch(setUser(data?.user));
+      dispatch(setUser(data));
     }, [data]);
     return { data, error, isError, isLoading, refetch };
   };

@@ -21,8 +21,6 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
       { status: 400 },
     );
   }
-  console.log(parsed, "yell");
-
   //   check user in DB
   const { accessToken, refreshToken, user } = await AuthService.loginUser(
     parsed.data,

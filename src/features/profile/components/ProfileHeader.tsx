@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/shared/components/Button";
+import { RootState } from "@/stores/store";
 import { motion } from "framer-motion";
 import {
   MapPin,
@@ -13,7 +14,11 @@ import {
   Settings,
   UserPlus,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 export default function ProfileHeader() {
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
+  );
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -52,7 +57,7 @@ export default function ProfileHeader() {
           <div className="relative">
             <div className="w-40 h-40 rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-400 p-1">
               <div className="w-full h-full rounded-2xl bg-[#0a0a0f] flex items-center justify-center text-6xl font-bold">
-                RR
+                <img src={user?.photoUrl} alt={user?.username} />
               </div>
             </div>
             <div className="absolute bottom-2 right-2 w-6 h-6 bg-emerald-400 rounded-full border-4 border-[#0a0a0f]" />
@@ -61,11 +66,11 @@ export default function ProfileHeader() {
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-3 mb-4">
-          <Button variant="secondary">
+          <Button type="button" variant="secondary">
             <Settings className="w-4 h-4" />
             <span className="hidden sm:inline">Edit Profile</span>
           </Button>
-          <Button>
+          <Button type="button">
             <UserPlus className="w-4 h-4" />
             <span className="hidden sm:inline">Follow</span>
           </Button>
@@ -77,9 +82,9 @@ export default function ProfileHeader() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-4xl font-bold mb-2"
+            className="text-4xl font-bold mb-2 capitalize"
           >
-            John Doe
+            {user?.username}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, x: -20 }}
@@ -87,7 +92,7 @@ export default function ProfileHeader() {
             transition={{ delay: 0.4, duration: 0.5 }}
             className="text-xl text-gray-400 mb-4"
           >
-            @johndoe
+            {user?.email}
           </motion.p>
 
           <motion.p
@@ -96,9 +101,9 @@ export default function ProfileHeader() {
             transition={{ delay: 0.5, duration: 0.5 }}
             className="text-gray-300 mb-6 max-w-2xl leading-relaxed"
           >
-            Full-stack developer passionate about building scalable applications
-            and contributing to open source. Currently working on making the web
-            more accessible and performant.
+            {user?.bio
+              ? user?.bio
+              : "Full-stack developer passionate about building scalable applications and contributing to open source. Currently working on making the web more accessible and performant."}
           </motion.p>
 
           {/* Meta Info */}
@@ -110,17 +115,26 @@ export default function ProfileHeader() {
           >
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-400" />
-              <span>San Francisco, CA</span>
+              <span>
+                {user?.location ? user.location : "Lucknow UP, India"}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <LinkIcon className="w-4 h-4 text-cyan-400" />
-              <a href="#" className="hover:text-cyan-400 transition-colors">
-                johndoe.dev
+              <a
+                href={user?.linkedInUrl}
+                className="hover:text-cyan-400 transition-colors"
+              >
+                {user?.linkedInUrl ? user.linkedInUrl : "ritikrathour024"}
               </a>
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-blue-400" />
-              <span>Joined March 2023</span>
+              <span>
+                {user?.createdAt
+                  ? user?.createdAt?.toDateString
+                  : "Joined March 2023"}
+              </span>
             </div>
           </motion.div>
 
@@ -132,28 +146,28 @@ export default function ProfileHeader() {
             className="flex items-center gap-3"
           >
             <motion.a
-              href="#"
+              href={user?.githubUrl}
               whileHover={{ scale: 1.1, y: -2 }}
               className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all group"
             >
               <Github className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
             </motion.a>
             <motion.a
-              href="#"
+              href={user?.twitterUrl}
               whileHover={{ scale: 1.1, y: -2 }}
               className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all group"
             >
               <Twitter className="w-5 h-5 text-gray-400 group-hover:text-cyan-400 transition-colors" />
             </motion.a>
             <motion.a
-              href="#"
+              href={user?.linkedInUrl}
               whileHover={{ scale: 1.1, y: -2 }}
               className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all group"
             >
               <Linkedin className="w-5 h-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
             </motion.a>
             <motion.a
-              href="#"
+              href={user?.email}
               whileHover={{ scale: 1.1, y: -2 }}
               className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all group"
             >

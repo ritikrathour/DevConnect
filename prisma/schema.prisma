@@ -37,7 +37,7 @@ model User {
   username     String
   age          Int?
   gender       Gender? 
-  photoUrl     String?
+  photoUrl     String? @default("https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3383.jpg?semt=ais_incoming&w=740&q=80")
   githubUrl    String? 
 
   profile   Profile?
@@ -62,15 +62,17 @@ model Profile {
 model skill {
   id String @id @default(uuid())
   name String @unique
-  skills UserSkill
+  skills UserSkill?
 }
+
 model UserSkill {
   userId String
-  skillId String
+  skillId String @unique
   user Profile @relation(fields:[userId],references:[id])
   skill skill @relation(fields:[skillId],references:[id])
   @@id([userId,skillId])
 }
+
 model Project {
   id          String   @id @default(uuid())
   userId      String
@@ -81,6 +83,7 @@ model Project {
 
   user User @relation(fields: [userId], references: [id])
 }
+
 model SocialLink {
   id     String @id @default(uuid())
   userId String

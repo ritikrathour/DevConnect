@@ -76,17 +76,6 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
-
-      {/* <style jsx>{`
-        @keyframes grid-move {
-          0% {
-            transform: translateY(0);
-          }
-          100% {
-            transform: translateY(50px);
-          }
-        }
-      `}</style> */}
     </motion.main>
   );
 }

@@ -1,9 +1,5 @@
+import { IUser } from "@/shared/types/globle.type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-interface IUser {
-  userName?: string;
-  email?: string;
-  bio?: string;
-}
 interface IAuthState {
   user: null | IUser;
   isAuthenticated: boolean;
@@ -16,9 +12,9 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<IAuthState>) => {
+    setUser: (state, action: PayloadAction<any>) => {
       state.isAuthenticated = true;
-      state.user = action.payload?.user;
+      state.user = action.payload?.data;
     },
   },
 });
