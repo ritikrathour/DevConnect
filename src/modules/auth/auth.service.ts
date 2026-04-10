@@ -3,6 +3,8 @@ import { ComparePassword, HashedPassword } from "@/lib/password";
 import { TokenService } from "../../shared/utils/tokenService";
 import { logger } from "@/lib/logger";
 import { ApiError } from "@/lib/errors/ApiError";
+import { redis } from "@/lib/cache/redis";
+import { CacheKeys, CacheTTL } from "@/lib/cache/redis.keys";
 type loginData = {
   email: string;
   password: string;
@@ -41,5 +43,22 @@ export const AuthService = {
     const accessToken = new TokenService().generateAccessToken(data?.email);
     const refreshToken = new TokenService().gererateREfresshToken(data);
     return { accessToken, refreshToken, user };
+  },
+  currentUser: async (email: string) => {
+    try {
+      const cachedUser = await redis.get(CacheKeys.CURRENT_USER(email));
+      if (cachedUser) {
+        return JSON.parse(cachedUser);
+      }
+      const user = await findUserByEmail(email);
+      await redis.setex(
+        CacheKeys.CURRENT_USER(email),
+        CacheTTL.MEDIUM,
+        JSON.stringify(user),
+      );
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
   },
 };

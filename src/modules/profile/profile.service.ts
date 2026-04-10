@@ -1,37 +1,28 @@
-import { redis } from "@/lib/cache/redis";
+// import { redis } from "@/lib/cache/redis";
 import { CacheKeys, CacheTTL } from "@/lib/cache/redis.keys";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { fetchProfile } from "./profile.repository";
+import { redis } from "@/lib/cache/redis";
 
 export class ProfileService {
-  static async getProfile(userId: string) {
+  static async getProfile(email: string) {
     // check cache
-    const cached = await redis.get(CacheKeys.USER_PROFILE(userId));
-    if (cached) {
-      return JSON.parse(cached);
-    }
+    // const cached = await redis.get(CacheKeys.USER_PROFILE(email));
+    // if (cached) {
+    //   logger.info("profile cache hit");
+    //   return JSON.parse(cached);
+    // }
     // DB call
-    const profile = await prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        profile: {
-          include: {
-            skills: {
-              include: { skill: true },
-            },
-          },
-        },
-        projects: true,
-        socials: true,
-        followers: true,
-        following: true,
-      },
-    });
+    logger.info("DB call profile");
+    const profile = await fetchProfile(email);
+    logger.info("Set profile in cache");
     // cache it
-    await redis.setex(
-      CacheKeys.USER_PROFILE(userId),
-      CacheTTL.MEDIUM,
-      JSON.stringify(profile),
-    );
+    // await redis.setex(
+    //   CacheKeys.USER_PROFILE(email),
+    //   CacheTTL.MEDIUM,
+    //   JSON.stringify(profile),
+    // );
     return profile;
   }
   static async updateProfile(userId: string, data: any) {
@@ -49,7 +40,7 @@ export class ProfileService {
     });
 
     // Invalidate cache
-    await redis.del(`user:profile:${userId}`);
+    // await redis.del(`user:profile:${userId}`);
 
     return profile;
   }

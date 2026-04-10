@@ -4,15 +4,16 @@ export enum IGender {
   other,
 }
 export interface IUser {
-  username?: string;
-  email?: string;
-  bio?: string;
-  age: number;
-  gender: IGender;
-  githubUrl: string;
-  twitterUrl: string;
-  linkedInUrl: string;
-  photoUrl: string;
-  location: string;
+  id: string;
+  username: string;
+  email: string;
+  yearsOfExp?: number;
+  skills?: any;
+  age?: number;
+  project: any;
+  socials: any;
+  followers: any;
+  following: any;
   createdAt: any;
+  updatedAt: any;
 }

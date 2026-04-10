@@ -3,6 +3,7 @@ import { redis } from "./redis";
 // Cache key prefixes for organization
 export const CacheKeys = {
   USER_PROFILE: (userId: string) => `user:profile:${userId}`,
+  CURRENT_USER: (userId: string) => `user:current:${userId}`,
   USER_BY_USERNAME: (username: string) => `user:username:${username}`,
   USER_PROJECTS: (userId: string) => `user:projects:${userId}`,
   USER_SKILLS: (userId: string) => `user:skills:${userId}`,

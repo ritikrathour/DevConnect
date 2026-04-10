@@ -11,13 +11,13 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
-import { useAuth } from "@/features/auth/hooks/useAuth";
 import Link from "next/link";
+import { useProfile } from "@/features/profile/hooks/useProfile";
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const { data: user } = useAuth().me();
+  const { data: user } = useProfile().profile();
   const notifications = [
     { id: 1, title: "New connection request", time: "5m ago", unread: true },
     { id: 2, title: "Project update from @john", time: "1h ago", unread: true },

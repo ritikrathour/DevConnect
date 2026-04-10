@@ -1,13 +1,15 @@
 import { AsyncHandler } from "@/lib/AsyncHandler";
 import { ApiError } from "@/lib/errors/ApiError";
+import { logger } from "@/lib/logger";
 import { ProfileService } from "@/modules/profile/profile.service";
+import { NextRequest } from "next/server";
 
-export const PUT = AsyncHandler(async (req: Request) => {
-  const body = await req.json();
-  const userId = req.headers.get("x-user-email"); // from middleware
-  if (!userId) {
-    throw new ApiError(401, "Unauthorised User!");
+export const GET = AsyncHandler(async (req: NextRequest) => {
+  logger.info("Profile route hit.");
+  const email = req.headers.get("x-user-email");
+  if (!email) {
+    throw new ApiError(401, "UnAuthorised user");
   }
-  const profile = await ProfileService.updateProfile(userId, body);
+  const profile = await ProfileService.getProfile(email);
   return Response.json(profile);
 });

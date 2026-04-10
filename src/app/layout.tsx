@@ -6,9 +6,6 @@ import Footer from "../appLayout/Footer";
 import PageTransition from "../shared/components/PageTransition";
 import { Toaster } from "react-hot-toast";
 import QueryProvider from "@/lib/tanstack/provider";
-
-import { Provider } from "react-redux";
-import { Store } from "@/stores/store";
 import ReduxProvider from "@/stores/provider";
 const geistSans = Geist({
   variable: "--font-geist-sans",

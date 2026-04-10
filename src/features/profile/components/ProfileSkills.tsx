@@ -1,13 +1,8 @@
 "use client";
+import { RootState } from "@/stores/store";
 import { motion } from "framer-motion";
-import {
-  Code2,
-  Database,
-  Layout,
-  Server,
-  Smartphone,
-  Cloud,
-} from "lucide-react";
+import { Code2, Database, Layout, Server, Cloud } from "lucide-react";
+import { useSelector } from "react-redux";
 
 interface Skill {
   name: string;
@@ -72,6 +67,9 @@ const additionalSkills = [
 ];
 
 export default function ProfileSkills() {
+  const { profile } = useSelector((state: RootState) => state.profile);
+  console.log(profile);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -157,67 +155,6 @@ export default function ProfileSkills() {
               </motion.div>
             );
           })}
-        </div>
-      </motion.div>
-      {/* Badges */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.4, duration: 0.5 }}
-        className="p-6 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm"
-      >
-        <h3 className="text-lg font-semibold mb-4">Achievements</h3>
-        <div className="grid grid-cols-3 gap-4">
-          {[
-            {
-              emoji: "🏆",
-              name: "Top Contributor",
-              color: "from-yellow-500 to-orange-500",
-            },
-            {
-              emoji: "⭐",
-              name: "Rising Star",
-              color: "from-cyan-500 to-blue-500",
-            },
-            {
-              emoji: "🚀",
-              name: "Early Adopter",
-              color: "from-emerald-500 to-teal-500",
-            },
-            {
-              emoji: "💎",
-              name: "Code Quality",
-              color: "from-purple-500 to-pink-500",
-            },
-            {
-              emoji: "🎯",
-              name: "Bug Hunter",
-              color: "from-red-500 to-orange-500",
-            },
-            {
-              emoji: "🌟",
-              name: "Mentor",
-              color: "from-blue-500 to-indigo-500",
-            },
-          ].map((badge, index) => (
-            <motion.div
-              key={badge.name}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.5 + index * 0.05, duration: 0.3 }}
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all cursor-pointer"
-            >
-              <div
-                className={`w-12 h-12 bg-linear-to-br ${badge.color} rounded-xl flex items-center justify-center text-2xl`}
-              >
-                {badge.emoji}
-              </div>
-              <span className="text-xs text-gray-400 text-center">
-                {badge.name}
-              </span>
-            </motion.div>
-          ))}
         </div>
       </motion.div>
     </motion.div>

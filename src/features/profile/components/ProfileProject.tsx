@@ -1,7 +1,10 @@
 "use client";
 
+import NoData from "@/shared/components/NoData";
+import { RootState } from "@/stores/store";
 import { motion } from "framer-motion";
 import { Star, GitFork, Circle, ExternalLink } from "lucide-react";
+import { useSelector } from "react-redux";
 
 interface Project {
   id: string;
@@ -73,7 +76,8 @@ interface ProfileProjectsProps {
 export default function ProfileProjects({
   showAll = false,
 }: ProfileProjectsProps) {
-  const displayProjects = showAll ? projects : projects.slice(0, 3);
+  const { profile } = useSelector((state: RootState) => state.profile);
+  console.log(profile?.skills);
 
   return (
     <motion.div
@@ -82,79 +86,80 @@ export default function ProfileProjects({
       transition={{ delay: 0.2, duration: 0.3 }}
     >
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Pinned Projects</h2>
+        <h2 className="text-2xl font-bold">Projects</h2>
         {!showAll && (
           <button className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors">
             View all →
           </button>
         )}
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {displayProjects.map((project, index) => (
-          <motion.div
-            key={project.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + index * 0.1, duration: 0.3 }}
-            className="group p-6 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm hover:bg-white/10 transition-all"
-          >
-            {/* Header */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
-                    {project.name}
-                  </h3>
-                  {project.isPrivate && (
-                    <span className="px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded">
-                      Private
-                    </span>
-                  )}
+        {profile?.project &&
+          profile?.project?.map((project: any, index: any) => (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + index * 0.1, duration: 0.3 }}
+              className="group p-6 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm hover:bg-white/10 transition-all"
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
+                      {project.name}
+                    </h3>
+                    {project.isPrivate && (
+                      <span className="px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded">
+                        Private
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    {project.description}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-400 leading-relaxed">
-                  {project.description}
-                </p>
+                <motion.a
+                  href="#"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="ml-4 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </motion.a>
               </div>
-              <motion.a
-                href="#"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="ml-4 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </motion.a>
-            </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1.5">
-                  <Circle
-                    className="w-3 h-3"
-                    style={{
-                      fill: project.languageColor,
-                      color: project.languageColor,
-                    }}
-                  />
-                  <span className="text-gray-400">{project.language}</span>
+              {/* Footer */}
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <Circle
+                      className="w-3 h-3"
+                      style={{
+                        fill: project.languageColor,
+                        color: project.languageColor,
+                      }}
+                    />
+                    <span className="text-gray-400">{project.language}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-gray-400">
+                    <Star className="w-4 h-4" />
+                    <span>{project.stars}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-gray-400">
+                    <GitFork className="w-4 h-4" />
+                    <span>{project.forks}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 text-gray-400">
-                  <Star className="w-4 h-4" />
-                  <span>{project.stars}</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-gray-400">
-                  <GitFork className="w-4 h-4" />
-                  <span>{project.forks}</span>
-                </div>
+                <span className="text-gray-500 text-xs">
+                  Updated {project.updatedAt}
+                </span>
               </div>
-              <span className="text-gray-500 text-xs">
-                Updated {project.updatedAt}
-              </span>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
       </div>
+      {!profile?.project && <NoData />}
     </motion.div>
   );
 }

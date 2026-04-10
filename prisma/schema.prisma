@@ -22,6 +22,14 @@ enum Gender {
   PREFER_NOT_TO_SAY
 }
  
+ enum SocialPlatform {
+  GITHUB
+  TWITTER
+  LINKEDIN
+  YOUTUBE
+  WEBSITE
+  OTHER
+}
 // ─── USER ────────────────────────────────────────────────
 
 model User {
@@ -31,75 +39,75 @@ model User {
 
   // Auth
   email          String    @unique
-  password       String
-  isVerified     Boolean   @default(false) 
+  password       String  
   // Profile
-  username     String
+  username     String 
   age          Int?
   gender       Gender? 
   photoUrl     String? @default("https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3383.jpg?semt=ais_incoming&w=740&q=80")
-  githubUrl    String? 
-
   profile   Profile?
   projects  Project[]
   socials   SocialLink[]
 
   followers  Follow[] @relation("followers")
   following  Follow[] @relation("following")
+  @@index([createdAt])
   @@map("users")
 }
 
 model Profile {
   id        String   @id @default(uuid())
   userId    String   @unique
-  bio       String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio       String? @db.VarChar(500)
+  yearsOfExp Int? 
   portfolio String?
-
-  user User @relation(fields: [userId], references: [id])
   skills UserSkill[]
+  @@map("profiles")
 }
 
-model skill {
+model Skill {
   id String @id @default(uuid())
   name String @unique
   skills UserSkill?
+  slug String @unique 
 }
 
 model UserSkill {
-  userId String
+  profileId String
   skillId String @unique
-  user Profile @relation(fields:[userId],references:[id])
-  skill skill @relation(fields:[skillId],references:[id])
-  @@id([userId,skillId])
+  profile Profile @relation(fields:[profileId],references:[id], onDelete: Cascade)
+  skill Skill @relation(fields:[skillId],references:[id], onDelete: Cascade)
+  @@id([profileId,skillId])
 }
 
 model Project {
   id          String   @id @default(uuid())
+  createdAt  DateTime @default(now())
   userId      String
   title       String
   description String
   githubUrl   String?
   liveUrl     String?
-
-  user User @relation(fields: [userId], references: [id])
+  techStack String[]
+  featured Boolean @default(false)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SocialLink {
   id     String @id @default(uuid())
   userId String
-  type   String
+  type   SocialPlatform
   url    String
-
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Follow {
   id           String @id @default(uuid())
+  createdAt DateTime @default(now())
   followerId   String
   followingId  String
-
-  follower  User @relation("following", fields: [followerId], references: [id])
-  following User @relation("followers", fields: [followingId], references: [id])
-
+  follower  User @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
   @@unique([followerId, followingId])
 }
