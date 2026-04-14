@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 export default function proxy(req: NextRequest) {
   const token = req.cookies.get("devConnect_accessToken")?.value;
-  console.log(token, "token");
-
   if (!token) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
@@ -19,5 +17,5 @@ export default function proxy(req: NextRequest) {
   });
 }
 export const config = {
-  matcher: ["/api/profile"],
+  matcher: ["/api/profile/:path*"],
 };

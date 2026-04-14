@@ -114,7 +114,9 @@ export default function ProfileHeader() {
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-400" />
               <span>
-                {profile?.location ? profile.location : "Lucknow UP, India"}
+                {profile?.profile?.socials?.location
+                  ? profile?.profile?.socials?.location
+                  : "Lucknow UP, India"}
               </span>
             </div>
             <div className="flex items-center gap-2">

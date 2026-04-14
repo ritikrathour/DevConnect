@@ -8,19 +8,20 @@ export const fetchProfile = async (email: string) => {
       select: {
         id: true,
         username: true,
+        email: true,
+        gender: true,
+        createdAt: true,
         photoUrl: true,
         profile: {
           select: {
             bio: true,
             portfolio: true,
             yearsOfExp: true,
-            skills: {
-              select: { skill: { select: { name: true, slug: true } } },
-            },
+            skills: true,
+            projects: true,
+            socials: true,
           },
         },
-        projects: true,
-        socials: true,
         _count: {
           select: { followers: true, following: true },
         },

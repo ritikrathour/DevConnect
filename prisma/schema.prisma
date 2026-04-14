@@ -12,7 +12,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
- 
+
 // ─── ENUMS ───────────────────────────────────────────────
 
 enum Gender {
@@ -21,8 +21,8 @@ enum Gender {
   OTHER
   PREFER_NOT_TO_SAY
 }
- 
- enum SocialPlatform {
+
+enum SocialPlatform {
   GITHUB
   TWITTER
   LINKEDIN
@@ -30,6 +30,7 @@ enum Gender {
   WEBSITE
   OTHER
 }
+
 // ─── USER ────────────────────────────────────────────────
 
 model User {
@@ -37,77 +38,105 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Auth
-  email          String    @unique
-  password       String  
-  // Profile
-  username     String 
-  age          Int?
-  gender       Gender? 
-  photoUrl     String? @default("https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3383.jpg?semt=ais_incoming&w=740&q=80")
-  profile   Profile?
-  projects  Project[]
-  socials   SocialLink[]
+  email    String  @unique
+  password String
+  username String
+  age      Int?
+  gender   Gender?
 
-  followers  Follow[] @relation("followers")
-  following  Follow[] @relation("following")
+  photoUrl String? @default("https://img.freepik.com/...")
+  coverImage String? @default("")
+  profile Profile?
+
+  // ✅ Follow relations
+  followers Follow[] @relation("UserFollowers")
+  following Follow[] @relation("UserFollowing")
+
   @@index([createdAt])
   @@map("users")
 }
 
+// ─── PROFILE ─────────────────────────────────────────────
+
 model Profile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
+  id     String @id @default(uuid())
+  userId String @unique
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bio       String? @db.VarChar(500)
-  yearsOfExp Int? 
-  portfolio String?
-  skills UserSkill[]
+
+  bio        String? @db.VarChar(500)
+  yearsOfExp Int?
+  portfolio  String?
+
+  skills   SkillCategory[]
+  socials  SocialLink[]
+  projects Project[]
+
   @@map("profiles")
 }
 
-model Skill {
-  id String @id @default(uuid())
-  name String @unique
-  skills UserSkill?
-  slug String @unique 
+// ─── SKILLS ─────────────────────────────────────────────
+
+model SkillCategory {
+  id    String @id @default(uuid()) // ✅ FIXED
+  name  String 
+  userId    String
+  profileId String
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skills Skill[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
 }
 
-model UserSkill {
-  profileId String
-  skillId String @unique
-  profile Profile @relation(fields:[profileId],references:[id], onDelete: Cascade)
-  skill Skill @relation(fields:[skillId],references:[id], onDelete: Cascade)
-  @@id([profileId,skillId])
+model Skill {
+  id         String @id @default(uuid())
+  name       String @unique
+  percentage Int 
+  categoryId String
+  category   SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
+// ─── PROJECT ─────────────────────────────────────────────
 
 model Project {
-  id          String   @id @default(uuid())
-  createdAt  DateTime @default(now())
-  userId      String
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  profileId String
   title       String
   description String
   githubUrl   String?
   liveUrl     String?
-  techStack String[]
-  featured Boolean @default(false)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  techStack   String[]
+  featured    Boolean  @default(false)
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
+
+// ─── SOCIAL ─────────────────────────────────────────────
 
 model SocialLink {
-  id     String @id @default(uuid())
-  userId String
-  type   SocialPlatform
-  url    String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String @id @default(uuid())
+  profileId String
+  type SocialPlatform
+  url  String
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
+// ─── FOLLOW (FIXED COMPLETELY) ───────────────────────────
+
 model Follow {
-  id           String @id @default(uuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
-  followerId   String
-  followingId  String
-  follower  User @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
-  following User @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  followerId  String
+  followingId String
+
+  follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
   @@unique([followerId, followingId])
 }

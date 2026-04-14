@@ -24,10 +24,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   iconPosition?: IconPosition;
   icon?: ReactNode;
   children?: ReactNode;
+  onClick?: any;
 }
 // button.styles
 const buttonBase =
-  "inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 outline-none disabled:opacity-90 disabled:cursor-not-allowed relative overflow-hidden cursor-pointer ";
+  "inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 outline-none disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden cursor-pointer ";
 
 const buttonVariants = {
   primary:
@@ -36,7 +37,7 @@ const buttonVariants = {
   outline: "border border-gray-300 text-gray-700 hover:bg-gray-100",
   ghost: "bg-transparent text-gray-700 hover:bg-gray-100",
   danger: "bg-red-600 text-white hover:bg-red-700",
-  dangerLight: "text-red-600 hover:bg-red-50 p-2 rounded-lg transition",
+  dangerLight: "text-red-600 p-2 bg-red-500/20 hover:bg-red-500/30 ",
   dark: "bg-[#173334] text-white hover:bg-[#1e4243]",
   glass:
     "bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:shadow-[0_4px_30px_rgba(255,255,255,0.15)]",
@@ -51,7 +52,7 @@ const buttonSizes = {
 const reflectionEffect = `
     before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br
     before:from-white/40 before:to-transparent before:opacity-0
-    hover:before:opacity-20 before:transition-opacity before:duration-300
+    hover:before:opacity-20 before:transition-opacity before:duration-300 border border-white/10
   `;
 
 export const Button: React.FC<ButtonProps> = ({
@@ -62,8 +63,9 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   iconPosition = "left",
   children,
+  onClick,
   className,
-  ...props
+  disabled,
 }) => {
   return (
     <motion.button
@@ -75,7 +77,8 @@ export const Button: React.FC<ButtonProps> = ({
         className,
       )}
       type={type}
-      disabled={isLoading || props.disabled}
+      disabled={isLoading || disabled}
+      onClick={() => onClick && onClick()}
     >
       {isLoading ? (
         <span className="flex items-center gap-2">
