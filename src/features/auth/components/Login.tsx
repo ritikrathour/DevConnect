@@ -39,7 +39,7 @@ const Login = () => {
         rememberMe: false,
       });
       setIsLoading(false);
-      router.push("/");
+      window.location.href = "/";
     } catch (error: any) {
       console.log(error?.response?.data?.message);
       setIsLoading(false);

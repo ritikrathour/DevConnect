@@ -17,7 +17,11 @@ export const fetchProfile = async (email: string) => {
             bio: true,
             portfolio: true,
             yearsOfExp: true,
-            skills: true,
+            skills: {
+              include: {
+                skills: true,
+              },
+            },
             projects: true,
             socials: true,
           },

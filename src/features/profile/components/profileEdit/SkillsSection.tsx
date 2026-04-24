@@ -5,6 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Code2, Plus, X, Search } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/stores/store";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { profileService } from "../../services/profile.service";
+import { authKeys } from "@/lib/tanstack/queryKeys/authKeys";
+import toast from "react-hot-toast";
 
 interface Skill {
   id: string;
@@ -13,29 +17,27 @@ interface Skill {
   category: string;
 }
 
-const SKILL_CATEGORIES = [
-  "Language",
-  "Framework",
-  "Database",
-  "Tool",
-  "Platform",
-];
+const SKILL_CATEGORIES = ["Language", "Frontend", "Backend", "Database"];
 
 const POPULAR_SKILLS = [
   { name: "JavaScript", category: "Language" },
   { name: "TypeScript", category: "Language" },
   { name: "Python", category: "Language" },
-  { name: "React", category: "Framework" },
-  { name: "Next.js", category: "Framework" },
-  { name: "Node.js", category: "Framework" },
+  { name: "React", category: "Frontend" },
+  { name: "Next.js", category: "Frontend" },
+  { name: "Node.js", category: "Backend" },
+  { name: "Express.js", category: "Backend" },
   { name: "PostgreSQL", category: "Database" },
   { name: "MongoDB", category: "Database" },
-  { name: "Docker", category: "Tool" },
-  { name: "Git", category: "Tool" },
+  { name: "Prisma", category: "Backend" },
 ];
 
 export default function SkillsSection() {
+  const queryClient = useQueryClient();
   const { profile } = useSelector((state: RootState) => state.profile);
+  console.log(profile?.profile, "skills");
+  console.log(profile?.profile?.skills, "yeeel");
+
   const [skills, setSkills] = useState<Skill[]>([
     { id: "1", name: "TypeScript", proficiency: 95, category: "Language" },
     { id: "2", name: "React", proficiency: 90, category: "Framework" },
@@ -63,13 +65,29 @@ export default function SkillsSection() {
       proficiency: newSkill.proficiency,
       category: skillData?.category || newSkill.category,
     };
-
+    mutate();
     setSkills([...skills, skill]);
     setNewSkill({ name: "", proficiency: 50, category: "Language" });
     setSearchQuery("");
     setShowAddForm(false);
   };
-
+  // handle add or update username
+  const { mutate, isPending } = useMutation({
+    mutationFn: () =>
+      profileService.addSkills(newSkill.category, {
+        name: searchQuery || newSkill.name,
+        percentage: newSkill.proficiency,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: authKeys.user,
+      });
+      toast.success("Basic details updated successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "error");
+    },
+  });
   const removeSkill = (id: string) => {
     setSkills(skills.filter((skill) => skill.id !== id));
   };
@@ -124,6 +142,7 @@ export default function SkillsSection() {
       {/* Skills List */}
       <div className="space-y-4 mb-6">
         <AnimatePresence mode="popLayout">
+          {/* profile?.profile &&
           {skills.map((skill) => (
             <motion.div
               key={skill.id}
@@ -179,7 +198,74 @@ export default function SkillsSection() {
                 </div>
               </div>
             </motion.div>
-          ))}
+          ))} */}
+          {profile?.profile &&
+            profile.profile.skills &&
+            profile.profile.skills?.map((skill: any, index: number) =>
+              skill?.skills?.map((userSkill: any) => {
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    className="p-4 bg-white/5 border border-white/10 rounded-lg group hover:bg-white/10 transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <h3 className="font-semibold">{userSkill.name}</h3>
+                        <span className="px-2 py-0.5 bg-white/10 rounded text-xs text-gray-400">
+                          {skill.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-400">
+                          {getProficiencyLabel(userSkill.percentage)}
+                        </span>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => removeSkill(userSkill.name)}
+                          className="w-8 h-8 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
+                        >
+                          <X className="w-4 h-4 text-red-400" />
+                        </motion.button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={userSkill.percentage}
+                        onChange={(e) =>
+                          updateProficiency(
+                            userSkill.name,
+                            parseInt(e.target.value),
+                          )
+                        }
+                        className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                      <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${userSkill.percentage}%` }}
+                          className={`h-full bg-linear-to-r ${getProficiencyColor(userSkill.percentage)}`}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>0%</span>
+                        <span className="font-medium">
+                          {userSkill.percentage}%
+                        </span>
+                        <span>100%</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              }),
+            )}
         </AnimatePresence>
       </div>
 
@@ -316,7 +402,7 @@ export default function SkillsSection() {
       </AnimatePresence>
 
       {/* Quick Add Popular Skills */}
-      {!showAddForm && skills.length < 5 && (
+      {/* {!showAddForm && skills.length < 5 && (
         <div className="mt-4">
           <p className="text-sm text-gray-400 mb-2">
             Quick add popular skills:
@@ -346,17 +432,19 @@ export default function SkillsSection() {
               ))}
           </div>
         </div>
-      )}
+      )} */}
 
-      {skills.length === 0 && !showAddForm && (
-        <div className="text-center py-8 text-gray-500">
-          <Code2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-          <p>No skills added yet</p>
-          <p className="text-sm mt-1">
-            Showcase your expertise by adding skills
-          </p>
-        </div>
-      )}
+      {profile?.profile?.skills &&
+        profile?.profile?.skills?.skills?.length === 0 &&
+        !showAddForm && (
+          <div className="text-center py-8 text-gray-500">
+            <Code2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
+            <p>No skills added yet</p>
+            <p className="text-sm mt-1">
+              Showcase your expertise by adding skills
+            </p>
+          </div>
+        )}
 
       <style jsx>{`
         .slider::-webkit-slider-thumb {

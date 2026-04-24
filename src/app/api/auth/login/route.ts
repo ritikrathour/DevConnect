@@ -40,7 +40,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 7 * 24 * 60 * 60,
   });
   logger.info("cookies set successfullly and sending response");
   // send response

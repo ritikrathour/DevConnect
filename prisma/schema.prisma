@@ -92,13 +92,14 @@ model SkillCategory {
 
 model Skill {
   id         String @id @default(uuid())
-  name       String @unique
+  name       String
   percentage Int 
   categoryId String
   category   SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@unique([name, categoryId])
 }
 
 // ─── PROJECT ─────────────────────────────────────────────

@@ -129,22 +129,49 @@ export class ProfileService {
     email: string,
     payload: { categoryName: string; skill: ISkill },
   ) {
-    const data = await prisma.profile.update({
-      where: { id: email },
-      data: {
-        skills: {
-          create: {
-            name: payload.categoryName,
-            skills: {
-              create: payload.skill,
+    console.log(payload, "helo payload");
+
+    const userId = await prisma.user.findUnique({
+      where: { email },
+      include: { profile: true },
+    });
+    let category = await prisma.skillCategory.findUnique({
+      where: {
+        userId_name: {
+          userId: userId?.id as string,
+          name: payload.categoryName,
+        },
+      },
+    });
+    // create category
+    if (!category) {
+      category = await prisma.skillCategory.create({
+        data: {
+          name: payload.categoryName,
+          userId: userId?.id as string,
+          profile: {
+            connect: {
+              id: userId?.profile?.id,
             },
-            userId: email,
+          },
+        },
+      });
+    }
+    // Create Skill
+    const skill = await prisma.skill.create({
+      data: {
+        name: payload.skill.name,
+        percentage: payload.skill.percentage,
+        category: {
+          connect: {
+            id: category.id,
           },
         },
       },
     });
     // await redis.del(`user:profile:${email}`);
-    return data;
+
+    return skill;
   }
   static async projects(email: string, project: IProject) {
     const data = await prisma.profile.update({

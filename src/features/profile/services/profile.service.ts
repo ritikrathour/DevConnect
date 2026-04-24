@@ -54,4 +54,23 @@ export const profileService = {
       throw error;
     }
   },
+  // categoryName: string; skill: ISkill
+  addSkills: async (
+    categoryName: string,
+    skill: {
+      name: string;
+      percentage: number;
+    },
+  ) => {
+    try {
+      const response = await axiosInstance.post("/profile/skills", {
+        categoryName,
+        skill,
+      });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
 };

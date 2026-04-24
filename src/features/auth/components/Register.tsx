@@ -39,7 +39,7 @@ const Register = () => {
         password: "",
       });
       setIsLoading(false);
-      router.push("/");
+      window.location.href = "/";
     } catch (error: any) {
       setIsLoading(false);
       if (error.response) {

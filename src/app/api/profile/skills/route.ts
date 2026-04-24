@@ -8,12 +8,13 @@ import { NextRequest } from "next/server";
 export const POST = AsyncHandler(async (req: NextRequest) => {
   logger.info("add skills query received");
   const body = await req.json();
-  const { success, data, error } = addSkillsSchema.safeParse(body);
   const userId = req.headers.get("x-user-email");
   if (!userId) {
     logger.error("user not found. UnAuthorised user!");
     throw new ApiError(401, "UnAuthorised user!");
   }
+  // validation
+  // const { success, data, error } = addSkillsSchema.safeParse(body);
   const result = await ProfileService.skillsAndTechnologies(userId, body);
   return Response.json(result);
 });

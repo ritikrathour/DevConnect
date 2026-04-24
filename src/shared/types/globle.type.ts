@@ -17,18 +17,18 @@ interface ISkill {
   slug: String;
   category: any;
 }
-interface ISkillsCategory {
-  name?: string;
-  value: number;
-  skills: ISkill[];
-}
+// interface ISkillsCategory {
+//   name?: string;
+//   value: number;
+//   skills: ISkill[];
+// }
 interface ISocials {
   type: SocialPlatform;
   url: String;
 }
 export interface IProfile {
   yearsOfExp?: number;
-  skills?: ISkillsCategory;
+  skills?: any;
   bio?: string;
   age?: number;
   portfolio?: string;

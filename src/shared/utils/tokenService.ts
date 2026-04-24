@@ -17,7 +17,7 @@ export class TokenService {
   // ── Generate Refresh Token ────────────────
   gererateREfresshToken(payload: JWTPayload): string {
     return jwt.sign(payload, REFRESH_TOKEN_SECRET, {
-      expiresIn: "7d",
+      expiresIn: ACCESS_TOKEN_TTL * 7,
       algorithm: "HS256",
       issuer: "devConnect",
       audience: "devconnect:web",
