@@ -77,3 +77,13 @@ export interface Achievement {
   color: string;
   earnedDate: string;
 }
+
+export interface IProject {
+  id?: string;
+  title: string;
+  description: string;
+  liveUrl: string;
+  githubUrl: string;
+  techStack: string[];
+  featured: boolean;
+}

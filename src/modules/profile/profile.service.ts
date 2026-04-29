@@ -37,25 +37,27 @@ export class ProfileService {
     // );
     return profile;
   }
-  //   static async updateProfile(email: string, data: any) {
-  //     const profile = await prisma.profile.upsert({
-  //       where: { user:email },
-  //       update: {
-  //         bio: data.bio,
-  //         portfolio: data.portfolio,
-  //       },
-  //       create: {
-  //         email,
-  //         bio: data.bio,
-  //         portfolio: data.portfolio,
-  //       },
-  //     });
-  //
-  //     // Invalidate cache
-  //     // await redis.del(`user:profile:${email}`);
-  //
-  //     return profile;
-  //   }
+  static async updateProfile(email: string, data: any) {
+    const profile = await prisma.profile.upsert({
+      where: {
+        userId: (await prisma.user.findUnique({ where: { email } }))?.id,
+      },
+      update: {
+        bio: data.bio,
+        portfolio: data.portfolio,
+      },
+      create: {
+        user: { connect: { email } },
+        bio: data.bio,
+        portfolio: data.portfolio,
+      },
+    });
+
+    // Invalidate cache
+    // await redis.del(`user:profile:${email}`);
+
+    return profile;
+  }
   static async basicDetails(
     email: string,
     payload: { username: string; age?: number },
@@ -129,8 +131,6 @@ export class ProfileService {
     email: string,
     payload: { categoryName: string; skill: ISkill },
   ) {
-    console.log(payload, "helo payload");
-
     const userId = await prisma.user.findUnique({
       where: { email },
       include: { profile: true },
@@ -174,15 +174,34 @@ export class ProfileService {
     return skill;
   }
   static async projects(email: string, project: IProject) {
-    const data = await prisma.profile.update({
-      where: { id: email },
-      data: {
+    const data = await prisma.profile.upsert({
+      where: {
+        userId: (await prisma.user.findUnique({ where: { email } }))?.id,
+      },
+      update: {
         projects: {
           create: project,
         },
       },
+      create: {
+        projects: {
+          create: project,
+        },
+        user: {
+          connect: { email },
+        },
+      },
     });
+
     // await redis.del(`user:profile:${email}`);
+    return data;
+  }
+  static async deleteProject(projectId: string) {
+    const data = await prisma.project.delete({
+      where: {
+        id: projectId,
+      },
+    });
     return data;
   }
 }

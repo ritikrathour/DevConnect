@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios.service";
-import { SocialLink } from "../types";
+import { IProject, SocialLink } from "../types";
 
 export const profileService = {
   getProfile: async () => {
@@ -67,6 +67,26 @@ export const profileService = {
         categoryName,
         skill,
       });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+  AddProject: async (project: IProject) => {
+    try {
+      const response = await axiosInstance.post("/profile/projects", project);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+  DeleteProject: async (projectId: string) => {
+    try {
+      const response = await axiosInstance.delete(
+        `/profile/projects/${projectId}`,
+      );
       return response.data;
     } catch (error) {
       console.log(error);

@@ -32,7 +32,7 @@ export interface IProfile {
   bio?: string;
   age?: number;
   portfolio?: string;
-  project: any;
+  projects: any;
   socials?: any;
 }
 export interface IUser {

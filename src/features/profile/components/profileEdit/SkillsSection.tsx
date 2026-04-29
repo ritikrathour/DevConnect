@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { profileService } from "../../services/profile.service";
 import { authKeys } from "@/lib/tanstack/queryKeys/authKeys";
 import toast from "react-hot-toast";
+import { Button } from "@/shared/components/Button";
 
 interface Skill {
   id: string;
@@ -35,9 +36,6 @@ const POPULAR_SKILLS = [
 export default function SkillsSection() {
   const queryClient = useQueryClient();
   const { profile } = useSelector((state: RootState) => state.profile);
-  console.log(profile?.profile, "skills");
-  console.log(profile?.profile?.skills, "yeeel");
-
   const [skills, setSkills] = useState<Skill[]>([
     { id: "1", name: "TypeScript", proficiency: 95, category: "Language" },
     { id: "2", name: "React", proficiency: 90, category: "Framework" },
@@ -127,78 +125,23 @@ export default function SkillsSection() {
           Skills & Technologies
         </h2>
         {!showAddForm && (
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all flex items-center gap-2"
-          >
+          <Button type="button" onClick={() => setShowAddForm(true)}>
             <Plus className="w-4 h-4" />
             Add Skill
-          </motion.button>
+          </Button>
+          // <motion.button
+          //   whileHover={{ scale: 1.05 }}
+          //   whileTap={{ scale: 0.95 }}
+          //   onClick={() => setShowAddForm(true)}
+          //   className="px-4 py-2 bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all flex items-center gap-2"
+          // >
+          // </motion.button>
         )}
       </div>
 
       {/* Skills List */}
       <div className="space-y-4 mb-6">
         <AnimatePresence mode="popLayout">
-          {/* profile?.profile &&
-          {skills.map((skill) => (
-            <motion.div
-              key={skill.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="p-4 bg-white/5 border border-white/10 rounded-lg group hover:bg-white/10 transition-all"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <h3 className="font-semibold">{skill.name}</h3>
-                  <span className="px-2 py-0.5 bg-white/10 rounded text-xs text-gray-400">
-                    {skill.category}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-400">
-                    {getProficiencyLabel(skill.proficiency)}
-                  </span>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => removeSkill(skill.id)}
-                    className="w-8 h-8 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
-                  >
-                    <X className="w-4 h-4 text-red-400" />
-                  </motion.button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={skill.proficiency}
-                  onChange={(e) =>
-                    updateProficiency(skill.id, parseInt(e.target.value))
-                  }
-                  className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
-                />
-                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${skill.proficiency}%` }}
-                    className={`h-full bg-linear-to-r ${getProficiencyColor(skill.proficiency)}`}
-                  />
-                </div>
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>0%</span>
-                  <span className="font-medium">{skill.proficiency}%</span>
-                  <span>100%</span>
-                </div>
-              </div>
-            </motion.div>
-          ))} */}
           {profile?.profile &&
             profile.profile.skills &&
             profile.profile.skills?.map((skill: any, index: number) =>
@@ -341,7 +284,11 @@ export default function SkillsSection() {
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-emerald-400 transition-all"
                 >
                   {SKILL_CATEGORIES.map((category) => (
-                    <option key={category} value={category}>
+                    <option
+                      key={category}
+                      value={category}
+                      className=" text-black"
+                    >
                       {category}
                     </option>
                   ))}
@@ -370,18 +317,18 @@ export default function SkillsSection() {
               </div>
 
               <div className="flex gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <Button
+                  type="button"
+                  isLoading={isPending}
+                  disabled={isPending || !newSkill.name}
+                  className="w-full"
                   onClick={() => addSkill()}
-                  disabled={!newSkill.name}
-                  className="flex-1 px-4 py-2 bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Add Skill
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                </Button>
+                <Button
+                  type="button"
+                  variant="dark"
                   onClick={() => {
                     setShowAddForm(false);
                     setNewSkill({
@@ -391,10 +338,9 @@ export default function SkillsSection() {
                     });
                     setSearchQuery("");
                   }}
-                  className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all"
                 >
                   Cancel
-                </motion.button>
+                </Button>
               </div>
             </div>
           </motion.div>

@@ -12,58 +12,65 @@ import {
   Edit2,
   Pin,
 } from "lucide-react";
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  url: string;
-  repositoryUrl: string;
-  technologies: string[];
-  isPinned: boolean;
-  stars: number;
-  forks: number;
-}
-
-interface ProjectsSectionProps {
-  onChange: () => void;
-}
+import { useSelector } from "react-redux";
+import { RootState } from "@/stores/store";
+import { Button } from "@/shared/components/Button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { profileService } from "../../services/profile.service";
+import toast from "react-hot-toast";
+import { authKeys } from "@/lib/tanstack/queryKeys/authKeys";
+import { IProject } from "../../types";
 
 export default function ProjectsSection() {
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: "1",
-      name: "awesome-nextjs-starter",
-      description:
-        "A production-ready Next.js starter template with TypeScript and Tailwind CSS",
-      url: "https://demo.com",
-      repositoryUrl: "https://github.com/user/awesome-nextjs-starter",
-      technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
-      isPinned: true,
-      stars: 1234,
-      forks: 89,
-    },
-  ]);
-
+  const queryClient = useQueryClient();
+  const { profile, isLoading } = useSelector(
+    (state: RootState) => state.profile,
+  );
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProject, setEditingProject] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
+  const [formData, setFormData] = useState<IProject>({
+    title: "",
     description: "",
-    url: "",
-    repositoryUrl: "",
-    technologies: [] as string[],
+    githubUrl: "",
+    liveUrl: "",
+    techStack: [] as string[],
+    featured: false,
   });
-
   const [techInput, setTechInput] = useState("");
 
+  // mutation function
+  const { mutate, isPending } = useMutation({
+    mutationFn: () => profileService.AddProject(formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: authKeys.user,
+      });
+      toast.success("Project added successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "error");
+    },
+  });
+  const { mutate: deleteProject, isPending: isDeletingProject } = useMutation({
+    mutationFn: (projectId: string) => profileService.DeleteProject(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: authKeys.user,
+      });
+      toast.success("Project deleted successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "error");
+    },
+  });
   const resetForm = () => {
     setFormData({
-      name: "",
+      title: "",
       description: "",
-      url: "",
-      repositoryUrl: "",
-      technologies: [],
+      liveUrl: "",
+      githubUrl: "",
+      techStack: [],
+      featured: false,
     });
     setTechInput("");
     setEditingProject(null);
@@ -71,57 +78,45 @@ export default function ProjectsSection() {
   };
 
   const saveProject = () => {
-    if (!formData.name || !formData.description) return;
-
-    if (editingProject) {
-      setProjects(
-        projects.map((p) =>
-          p.id === editingProject ? { ...p, ...formData } : p,
-        ),
-      );
-    } else {
-      const newProject: Project = {
-        id: Date.now().toString(),
-        ...formData,
-        isPinned: false,
-        stars: 0,
-        forks: 0,
-      };
-      setProjects([...projects, newProject]);
-    }
-
+    if (!formData.title || !formData.description) return;
+    mutate();
+    // if (editingProject) {
+    //   setProjects(
+    //     projects.map((p) =>
+    //       p.id === editingProject ? { ...p, ...formData } : p,
+    //     ),
+    //   );
+    // } else {
+    //   const newProject = {
+    //     id: Date.now().toString(),
+    //     ...formData,
+    //     isPinned: false,
+    //   };
+    //   setProjects([...projects, newProject]);
+    // }
     resetForm();
   };
 
-  const editProject = (project: Project) => {
+  const editProject = (project: IProject) => {
     setFormData({
-      name: project.name,
+      title: project.title,
       description: project.description,
-      url: project.url,
-      repositoryUrl: project.repositoryUrl,
-      technologies: project.technologies,
+      liveUrl: project.liveUrl,
+      githubUrl: project.githubUrl,
+      techStack: project.techStack,
+      featured: project.featured,
     });
-    setEditingProject(project.id);
+    setEditingProject(project?.id as string);
     setShowAddForm(true);
   };
 
-  const deleteProject = (id: string) => {
-    if (confirm("Are you sure you want to delete this project?")) {
-      setProjects(projects.filter((p) => p.id !== id));
-    }
-  };
-
-  const togglePin = (id: string) => {
-    setProjects(
-      projects.map((p) => (p.id === id ? { ...p, isPinned: !p.isPinned } : p)),
-    );
-  };
+  const togglePin = (id: string) => {};
 
   const addTechnology = () => {
-    if (techInput && !formData.technologies.includes(techInput)) {
+    if (techInput && !formData.techStack.includes(techInput)) {
       setFormData({
         ...formData,
-        technologies: [...formData.technologies, techInput],
+        techStack: [...formData.techStack, techInput],
       });
       setTechInput("");
     }
@@ -130,7 +125,7 @@ export default function ProjectsSection() {
   const removeTechnology = (tech: string) => {
     setFormData({
       ...formData,
-      technologies: formData.technologies.filter((t) => t !== tech),
+      techStack: formData.techStack.filter((t) => t !== tech),
     });
   };
 
@@ -162,109 +157,105 @@ export default function ProjectsSection() {
       {/* Projects List */}
       <div className="space-y-4 mb-6">
         <AnimatePresence mode="popLayout">
-          {projects.map((project) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="p-6 bg-white/5 border border-white/10 rounded-lg group hover:bg-white/10 transition-all"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-semibold">{project.name}</h3>
-                    {project.isPinned && (
-                      <Pin className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                    )}
+          {profile?.profile &&
+            profile?.profile?.projects?.map((project: any) => (
+              <motion.div key={project.id}>
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="p-6 bg-white/5 border border-white/10 rounded-lg group hover:bg-white/10 transition-all"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-semibold">
+                          {project.title}
+                        </h3>
+                        {project.featured && (
+                          <Pin className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                        )}
+                      </div>
+                      <p className="text-gray-400 text-sm leading-relaxed">
+                        {project.description}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                      <Button
+                        type="button"
+                        variant="dark"
+                        onClick={() => togglePin(project.id)}
+                        className={` w-8 h-8 ${
+                          project.featured
+                            ? "bg-yellow-500/20 border-yellow-500/30 text-yellow-400"
+                            : "bg-white/5 border-white/10 text-gray-400"
+                        }`}
+                      >
+                        <Pin className="w-4 h-4" />
+                      </Button>
+                      {/*TODO  */}
+                      {/* <Button
+                        type="button"
+                        variant="dark"
+                        onClick={() => editProject(project)}
+                        className={`w-8 h-8 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30`}
+                      >
+                        <Edit2 className="w-4 h-4 text-blue-400" />
+                      </Button> */}
+                      <Button
+                        type="button"
+                        variant="dark"
+                        onClick={() => deleteProject(project.id)}
+                        className={`w-8 h-8 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg`}
+                      >
+                        <X className="w-4 h-4 text-red-400" />
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-gray-400 text-sm leading-relaxed">
-                    {project.description}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => togglePin(project.id)}
-                    className={`w-8 h-8 ${
-                      project.isPinned
-                        ? "bg-yellow-500/20 border-yellow-500/30 text-yellow-400"
-                        : "bg-white/5 border-white/10 text-gray-400"
-                    } border rounded-lg flex items-center justify-center transition-all`}
-                  >
-                    <Pin className="w-4 h-4" />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => editProject(project)}
-                    className="w-8 h-8 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg flex items-center justify-center transition-all"
-                  >
-                    <Edit2 className="w-4 h-4 text-blue-400" />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => deleteProject(project.id)}
-                    className="w-8 h-8 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg flex items-center justify-center transition-all"
-                  >
-                    <X className="w-4 h-4 text-red-400" />
-                  </motion.button>
-                </div>
-              </div>
 
-              {/* Technologies */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-2 py-1 bg-white/10 rounded text-xs"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
+                  {/* Technologies */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project?.techStack?.map((tech: any) => (
+                      <span
+                        key={tech}
+                        className="px-2 py-1 bg-white/10 rounded text-xs"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
 
-              {/* Stats & Links */}
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-4 text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4" />
-                    <span>{project.stars}</span>
+                  {/* Stats & Links */}
+                  <div className="flex items-center justify-end text-sm">
+                    <div className="flex gap-2">
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-cyan-400 hover:text-cyan-300 transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          <span>Demo</span>
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors"
+                        >
+                          <FolderGit2 className="w-4 h-4" />
+                          <span>Code</span>
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <GitFork className="w-4 h-4" />
-                    <span>{project.forks}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {project.url && (
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-cyan-400 hover:text-cyan-300 transition-colors"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      <span>Demo</span>
-                    </a>
-                  )}
-                  {project.repositoryUrl && (
-                    <a
-                      href={project.repositoryUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors"
-                    >
-                      <FolderGit2 className="w-4 h-4" />
-                      <span>Code</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
+                </motion.div>
+              </motion.div>
+            ))}
         </AnimatePresence>
       </div>
 
@@ -289,9 +280,9 @@ export default function ProjectsSection() {
                 </label>
                 <input
                   type="text"
-                  value={formData.name}
+                  value={formData.title}
                   onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
+                    setFormData({ ...formData, title: e.target.value })
                   }
                   placeholder="my-awesome-project"
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-cyan-400 transition-all placeholder-gray-600"
@@ -322,9 +313,9 @@ export default function ProjectsSection() {
                   </label>
                   <input
                     type="url"
-                    value={formData.url}
+                    value={formData.liveUrl}
                     onChange={(e) =>
-                      setFormData({ ...formData, url: e.target.value })
+                      setFormData({ ...formData, liveUrl: e.target.value })
                     }
                     placeholder="https://demo.com"
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-cyan-400 transition-all placeholder-gray-600"
@@ -336,11 +327,11 @@ export default function ProjectsSection() {
                   </label>
                   <input
                     type="url"
-                    value={formData.repositoryUrl}
+                    value={formData.githubUrl}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        repositoryUrl: e.target.value,
+                        githubUrl: e.target.value,
                       })
                     }
                     placeholder="https://github.com/user/repo"
@@ -359,7 +350,7 @@ export default function ProjectsSection() {
                     type="text"
                     value={techInput}
                     onChange={(e) => setTechInput(e.target.value)}
-                    onKeyPress={(e) =>
+                    onKeyDown={(e) =>
                       e.key === "Enter" && (e.preventDefault(), addTechnology())
                     }
                     placeholder="Add technology..."
@@ -375,7 +366,7 @@ export default function ProjectsSection() {
                   </motion.button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {formData.technologies.map((tech) => (
+                  {formData.techStack.map((tech) => (
                     <span
                       key={tech}
                       className="px-3 py-1 bg-white/10 rounded-full text-sm flex items-center gap-2"
@@ -393,36 +384,130 @@ export default function ProjectsSection() {
               </div>
 
               <div className="flex gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <Button
                   onClick={saveProject}
-                  disabled={!formData.name || !formData.description}
-                  className="flex-1 px-4 py-2 bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={
+                    !formData.title || !formData.description || isPending
+                  }
+                  type="button"
+                  className="w-full"
                 >
                   {editingProject ? "Update Project" : "Add Project"}
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={resetForm}
-                  className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all"
-                >
+                </Button>
+                <Button type="button" onClick={resetForm} variant="dark">
                   Cancel
-                </motion.button>
+                </Button>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {projects.length === 0 && !showAddForm && (
-        <div className="text-center py-8 text-gray-500">
-          <FolderGit2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-          <p>No projects added yet</p>
-          <p className="text-sm mt-1">Showcase your work by adding projects</p>
-        </div>
-      )}
+      {profile?.profile &&
+        profile?.profile?.projects?.length === 0 &&
+        !showAddForm && (
+          <div className="text-center py-8 text-gray-500">
+            <FolderGit2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
+            <p>No projects added yet</p>
+            <p className="text-sm mt-1">
+              Showcase your work by adding projects
+            </p>
+          </div>
+        )}
     </motion.div>
   );
 }
+
+//  {projects.map((project) => (
+//             <motion.div
+//               key={project.id}
+//               initial={{ opacity: 0, x: -20 }}
+//               animate={{ opacity: 1, x: 0 }}
+//               exit={{ opacity: 0, x: 20 }}
+//               className="p-6 bg-white/5 border border-white/10 rounded-lg group hover:bg-white/10 transition-all"
+//             >
+//               <div className="flex items-start justify-between mb-4">
+//                 <div className="flex-1">
+//                   <div className="flex items-center gap-2 mb-2">
+//                     <h3 className="text-lg font-semibold">{project.title}</h3>
+//                     {project.featured && (
+//                       <Pin className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+//                     )}
+//                   </div>
+//                   <p className="text-gray-400 text-sm leading-relaxed">
+//                     {project.description}
+//                   </p>
+//                 </div>
+//                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+//                   <Button
+//                     type="button"
+//                     variant="dark"
+//                     onClick={() => togglePin(project.id as string)}
+//                     className={` w-8 h-8 ${
+//                       project.featured
+//                         ? "bg-yellow-500/20 border-yellow-500/30 text-yellow-400"
+//                         : "bg-white/5 border-white/10 text-gray-400"
+//                     }`}
+//                   >
+//                     <Pin className="w-4 h-4" />
+//                   </Button>
+//                   <Button
+//                     type="button"
+//                     variant="dark"
+//                     onClick={() => editProject(project)}
+//                     className={`w-8 h-8 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30`}
+//                   >
+//                     <Edit2 className="w-4 h-4 text-blue-400" />
+//                   </Button>
+//                   <Button
+//                     type="button"
+//                     variant="dark"
+//                     onClick={() => deleteProject(project.id as string)}
+//                     className={`w-8 h-8 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg`}
+//                   >
+//                     <X className="w-4 h-4 text-red-400" />
+//                   </Button>
+//                 </div>
+//               </div>
+//
+//               {/* Technologies */}
+//               <div className="flex flex-wrap gap-2 mb-4">
+//                 {project?.techStack?.map((tech) => (
+//                   <span
+//                     key={tech}
+//                     className="px-2 py-1 bg-white/10 rounded text-xs"
+//                   >
+//                     {tech}
+//                   </span>
+//                 ))}
+//               </div>
+//
+//               {/* Stats & Links */}
+//               <div className="flex items-center justify-end text-sm">
+//                 <div className="flex gap-2">
+//                   {project.liveUrl && (
+//                     <a
+//                       href={project.liveUrl}
+//                       target="_blank"
+//                       rel="noopener noreferrer"
+//                       className="flex items-center gap-1 text-cyan-400 hover:text-cyan-300 transition-colors"
+//                     >
+//                       <ExternalLink className="w-4 h-4" />
+//                       <span>Demo</span>
+//                     </a>
+//                   )}
+//                   {project.githubUrl && (
+//                     <a
+//                       href={project.githubUrl}
+//                       target="_blank"
+//                       rel="noopener noreferrer"
+//                       className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors"
+//                     >
+//                       <FolderGit2 className="w-4 h-4" />
+//                       <span>Code</span>
+//                     </a>
+//                   )}
+//                 </div>
+//               </div>
+//             </motion.div>
+//           ))}

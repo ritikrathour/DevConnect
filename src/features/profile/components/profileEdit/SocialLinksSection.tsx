@@ -151,9 +151,6 @@ export default function SocialLinksSection() {
     (platform) =>
       !socialLinks?.some((link: any) => link.platform === platform.value),
   );
-
-  console.log(data, "data");
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
