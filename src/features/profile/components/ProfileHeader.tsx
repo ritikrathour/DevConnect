@@ -14,6 +14,7 @@ import {
   Settings,
   UserPlus,
 } from "lucide-react";
+import Link from "next/link";
 import { useSelector } from "react-redux";
 export default function ProfileHeader() {
   const { profile } = useSelector((state: RootState) => state.profile);
@@ -64,10 +65,12 @@ export default function ProfileHeader() {
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-3 mb-4">
-          <Button type="button" variant="secondary">
-            <Settings className="w-4 h-4" />
-            <span className="hidden sm:inline">Edit Profile</span>
-          </Button>
+          <Link href="/profile/edit">
+            <Button type="button" variant="secondary">
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">Edit Profile</span>
+            </Button>
+          </Link>
           <Button type="button">
             <UserPlus className="w-4 h-4" />
             <span className="hidden sm:inline">Follow</span>
@@ -99,8 +102,8 @@ export default function ProfileHeader() {
             transition={{ delay: 0.5, duration: 0.5 }}
             className="text-gray-300 mb-6 max-w-2xl leading-relaxed"
           >
-            {profile?.bio
-              ? profile?.bio
+            {profile?.profile?.bio
+              ? profile?.profile?.bio
               : "Full-stack developer passionate about building scalable applications and contributing to open source. Currently working on making the web more accessible and performant."}
           </motion.p>
 
@@ -122,11 +125,11 @@ export default function ProfileHeader() {
             <div className="flex items-center gap-2">
               <LinkIcon className="w-4 h-4 text-cyan-400" />
               <a
-                href={profile?.social?.linkedInUrl}
+                href={profile?.profile?.socials?.linkedInUrl}
                 className="hover:text-cyan-400 transition-colors"
               >
-                {profile?.social?.linkedInUrl
-                  ? profile?.social?.linkedInUrl
+                {profile?.profile?.socials?.linkedInUrl
+                  ? profile?.profile?.socials?.linkedInUrl
                   : "ritikrathour024"}
               </a>
             </div>
@@ -149,28 +152,28 @@ export default function ProfileHeader() {
             className="flex items-center gap-3"
           >
             <motion.a
-              href={profile?.social?.githubUrl}
+              href={profile?.profile?.socials?.githubUrl}
               whileHover={{ scale: 1.1, y: -2 }}
               className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all group"
             >
               <Github className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
             </motion.a>
             <motion.a
-              href={profile?.social?.twitterUrl}
+              href={profile?.profile?.socials?.twitterUrl}
               whileHover={{ scale: 1.1, y: -2 }}
               className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all group"
             >
               <Twitter className="w-5 h-5 text-gray-400 group-hover:text-cyan-400 transition-colors" />
             </motion.a>
             <motion.a
-              href={profile?.social?.linkedInUrl}
+              href={profile?.profile?.socials?.linkedInUrl}
               whileHover={{ scale: 1.1, y: -2 }}
               className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all group"
             >
               <Linkedin className="w-5 h-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
             </motion.a>
             <motion.a
-              href={profile?.email}
+              href={profile?.email ? `mailto:${profile?.email}` : "#"}
               whileHover={{ scale: 1.1, y: -2 }}
               className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all group"
             >

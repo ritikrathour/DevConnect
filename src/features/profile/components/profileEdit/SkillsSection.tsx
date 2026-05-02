@@ -129,13 +129,6 @@ export default function SkillsSection() {
             <Plus className="w-4 h-4" />
             Add Skill
           </Button>
-          // <motion.button
-          //   whileHover={{ scale: 1.05 }}
-          //   whileTap={{ scale: 0.95 }}
-          //   onClick={() => setShowAddForm(true)}
-          //   className="px-4 py-2 bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all flex items-center gap-2"
-          // >
-          // </motion.button>
         )}
       </div>
 
@@ -168,7 +161,7 @@ export default function SkillsSection() {
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          onClick={() => removeSkill(userSkill.name)}
+                          // onClick={() => removeSkill(userSkill.name)}
                           className="w-8 h-8 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
                         >
                           <X className="w-4 h-4 text-red-400" />
@@ -181,13 +174,13 @@ export default function SkillsSection() {
                         type="range"
                         min="0"
                         max="100"
-                        value={userSkill.percentage}
-                        onChange={(e) =>
-                          updateProficiency(
-                            userSkill.name,
-                            parseInt(e.target.value),
-                          )
-                        }
+                        // value={userSkill.percentage}
+                        // onChange={(e) =>
+                        //   updateProficiency(
+                        //     userSkill.name,
+                        //     parseInt(e.target.value),
+                        //   )
+                        // }
                         className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
                       />
                       <div className="h-2 bg-white/5 rounded-full overflow-hidden">

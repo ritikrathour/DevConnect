@@ -10,9 +10,11 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { useProfile } from "@/features/profile/hooks/useProfile";
+import { motion } from "motion/react";
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -104,107 +106,141 @@ const Header = () => {
             </button>
 
             {user?.data ? (
-              <>
-                <div className="relative">
-                  <button
-                    onClick={() => setNotificationsOpen(!notificationsOpen)}
-                    className="relative p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-                  >
-                    <Bell className="w-5 h-5" />
-                    {unreadCount > 0 && (
-                      <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                    )}
-                  </button>
+              //               <>
+              //                 <div className="relative">
+              //                   <button
+              //                     onClick={() => setNotificationsOpen(!notificationsOpen)}
+              //                     className="relative p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+              //                   >
+              //                     <Bell className="w-5 h-5" />
+              //                     {unreadCount > 0 && (
+              //                       <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+              //                     )}
+              //                   </button>
+              //
+              //                   {/* Notifications Dropdown  */}
+              //                   {notificationsOpen && (
+              //                     <div className="absolute right-0 mt-2 w-80 bg-[#0f0f15] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              //                       <div className="p-4 border-b border-white/10">
+              //                         <h3 className="font-semibold">Notifications</h3>
+              //                         {unreadCount > 0 && (
+              //                           <p className="text-xs text-gray-400 mt-1">
+              //                             {unreadCount} unread
+              //                           </p>
+              //                         )}
+              //                       </div>
+              //                       <div className="max-h-96 overflow-y-auto">
+              //                         {notifications.map((notif) => (
+              //                           <div
+              //                             key={notif.id}
+              //                             className={`p-4 hover:bg-white/5 transition-colors cursor-pointer border-b border-white/5 ${
+              //                               notif.unread ? "bg-emerald-500/5" : ""
+              //                             }`}
+              //                           >
+              //                             <div className="flex items-start justify-between gap-2">
+              //                               <p className="text-sm">{notif.title}</p>
+              //                               {notif.unread && (
+              //                                 <span className="w-2 h-2 bg-emerald-400 rounded-full mt-1 shrink-0"></span>
+              //                               )}
+              //                             </div>
+              //                             <p className="text-xs text-gray-500 mt-1">
+              //                               {notif.time}
+              //                             </p>
+              //                           </div>
+              //                         ))}
+              //                       </div>
+              //                       <div className="p-3 border-t border-white/10">
+              //                         <a
+              //                           href="/notifications"
+              //                           className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+              //                         >
+              //                           View all notifications
+              //                         </a>
+              //                       </div>
+              //                     </div>
+              //                   )}
+              //                 </div>
+              //                 <div className="relative">
+              //                   <button
+              //                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+              //                     className="flex items-center gap-2 p-1 pr-3 hover:bg-white/5 rounded-lg transition-all"
+              //                   >
+              //                     <div className="w-8 h-8 bg-linear-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center">
+              //                       <User className="w-4 h-4 text-black" />
+              //                     </div>
+              //                     <ChevronDown className="w-4 h-4 text-gray-400 hidden sm:block" />
+              //                   </button>
+              //                   {/* User Dropdown */}
+              //                   {userDropdownOpen && (
+              //                     <div className="absolute right-0 mt-2 w-64 bg-[#0f0f15] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              //                       <div className="p-4 border-b border-white/10">
+              //                         <p className="font-semibold capitalize">
+              //                           {user?.data && user?.data?.username}
+              //                         </p>
+              //                         <p className="text-sm text-gray-400">
+              //                           {user?.data && user?.data?.email}
+              //                         </p>
+              //                       </div>
+              //                       <div className="py-2">
+              //                         <Link
+              //                           href="/profile"
+              //                           className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors"
+              //                         >
+              //                           <User className="w-4 h-4 text-gray-400" />
+              //                           <span className="text-sm">Profile</span>
+              //                         </Link>
+              //                         <a
+              //                           href="/settings"
+              //                           className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors"
+              //                         >
+              //                           <Settings className="w-4 h-4 text-gray-400" />
+              //                           <span className="text-sm">Settings</span>
+              //                         </a>
+              //                       </div>
+              //                       <div className="border-t border-white/10 py-2">
+              //                         <button className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors w-full text-red-400">
+              //                           <LogOut className="w-4 h-4" />
+              //                           <span className="text-sm">Sign Out</span>
+              //                         </button>
+              //                       </div>
+              //                     </div>
+              //                   )}
+              //                 </div>
+              //               </>
+              <div className="flex items-center gap-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all"
+                >
+                  <Bell className="w-5 h-5" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                </motion.button>
 
-                  {/* Notifications Dropdown  */}
-                  {notificationsOpen && (
-                    <div className="absolute right-0 mt-2 w-80 bg-[#0f0f15] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                      <div className="p-4 border-b border-white/10">
-                        <h3 className="font-semibold">Notifications</h3>
-                        {unreadCount > 0 && (
-                          <p className="text-xs text-gray-400 mt-1">
-                            {unreadCount} unread
-                          </p>
-                        )}
-                      </div>
-                      <div className="max-h-96 overflow-y-auto">
-                        {notifications.map((notif) => (
-                          <div
-                            key={notif.id}
-                            className={`p-4 hover:bg-white/5 transition-colors cursor-pointer border-b border-white/5 ${
-                              notif.unread ? "bg-emerald-500/5" : ""
-                            }`}
-                          >
-                            <div className="flex items-start justify-between gap-2">
-                              <p className="text-sm">{notif.title}</p>
-                              {notif.unread && (
-                                <span className="w-2 h-2 bg-emerald-400 rounded-full mt-1 shrink-0"></span>
-                              )}
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {notif.time}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="p-3 border-t border-white/10">
-                        <a
-                          href="/notifications"
-                          className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-                        >
-                          View all notifications
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="relative">
-                  <button
-                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="flex items-center gap-2 p-1 pr-3 hover:bg-white/5 rounded-lg transition-all"
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Post</span>
+                </motion.button>
+
+                <Link href="/profile">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-10 h-10 rounded-lg overflow-hidden border-2 border-emerald-400"
                   >
-                    <div className="w-8 h-8 bg-linear-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center">
-                      <User className="w-4 h-4 text-black" />
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-gray-400 hidden sm:block" />
-                  </button>
-                  {/* User Dropdown */}
-                  {userDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-[#0f0f15] border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                      <div className="p-4 border-b border-white/10">
-                        <p className="font-semibold capitalize">
-                          {user?.data && user?.data?.username}
-                        </p>
-                        <p className="text-sm text-gray-400">
-                          {user?.data && user?.data?.email}
-                        </p>
-                      </div>
-                      <div className="py-2">
-                        <Link
-                          href="/profile"
-                          className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors"
-                        >
-                          <User className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm">Profile</span>
-                        </Link>
-                        <a
-                          href="/settings"
-                          className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors"
-                        >
-                          <Settings className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm">Settings</span>
-                        </a>
-                      </div>
-                      <div className="border-t border-white/10 py-2">
-                        <button className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 transition-colors w-full text-red-400">
-                          <LogOut className="w-4 h-4" />
-                          <span className="text-sm">Sign Out</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
+                    <img
+                      src="https://api.dicebear.com/7.x/avataaars/svg?seed=current"
+                      alt="Profile"
+                      width={40}
+                      height={40}
+                    />
+                  </motion.div>
+                </Link>
+              </div>
             ) : (
               <Link
                 href="/auth/login"

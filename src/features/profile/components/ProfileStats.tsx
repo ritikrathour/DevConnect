@@ -3,6 +3,7 @@
 import { RootState } from "@/stores/store";
 import { motion } from "framer-motion";
 import { Code2, Laptop2, Users2, TimerIcon } from "lucide-react";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 interface Stat {
@@ -16,11 +17,24 @@ interface Stat {
 
 export default function ProfileStats() {
   const { profile } = useSelector((state: RootState) => state.profile);
+  console.log(profile?.profile?.skills);
+  const calculateTotalSkills = useMemo(() => {
+    return profile?.profile?.skills?.reduce((total: any, skill: any) => {
+      let totalSkills = skill?.skills?.reduce((subTotal: any) => {
+        return subTotal + 1;
+      }, 0);
+      return total + totalSkills;
+    }, 0);
+  }, [profile?.profile?.skills]);
+  let data = calculateTotalSkills;
+  console.log(data, "hello");
+
   const stats: Stat[] = [
     {
       icon: Code2,
       label: "Total Projects",
-      value: (profile?.project && profile?.project?.length) || 0,
+      value:
+        (profile?.profile?.projects && profile?.profile?.projects?.length) || 0,
       change: "+3 this month",
       color: "text-emerald-400",
       bgColor: "bg-emerald-500/10",
@@ -28,7 +42,7 @@ export default function ProfileStats() {
     {
       icon: Laptop2,
       label: "Teck Stack Skills",
-      value: (profile?.skills && profile?.skills?.length) || 0,
+      value: calculateTotalSkills || 0,
       change: "React, Node, MongoDB +9",
       color: "text-cyan-400",
       bgColor: "bg-cyan-500/10",
@@ -36,8 +50,8 @@ export default function ProfileStats() {
     {
       icon: Users2,
       label: "Network Connections",
-      value: profile?.followers || 0,
-      change: "+89 this month",
+      value: profile?.followers?.length || 0,
+      change: "N/A",
       color: "text-yellow-400",
       bgColor: "bg-yellow-500/10",
     },
