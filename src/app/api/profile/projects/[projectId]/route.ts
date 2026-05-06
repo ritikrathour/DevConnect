@@ -12,7 +12,7 @@ export const DELETE = AsyncHandler(async (req: NextRequest) => {
     logger.error("project id not found in query params!");
     throw new ApiError(400, "Project ID is required!");
   }
-  const userId = req.headers.get("x-user-email");
+  const userId = req.headers.get("x-user-id");
   if (!userId) {
     logger.error("user not found. UnAuthorised user!");
     throw new ApiError(401, "UnAuthorised user!");

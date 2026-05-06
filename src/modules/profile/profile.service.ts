@@ -18,7 +18,7 @@ interface IProject {
   featured: boolean;
 }
 export class ProfileService {
-  static async getProfile(email: string) {
+  static async getProfile(userId: string) {
     // check cache
     // const cached = await redis.get(CacheKeys.USER_PROFILE(email));
     // if (cached) {
@@ -27,7 +27,7 @@ export class ProfileService {
     // }
     // DB call
     logger.info("DB call profile");
-    const profile = await fetchProfile(email);
+    const profile = await fetchProfile(userId);
     logger.info("Set profile in cache");
     // cache it
     // await redis.setex(
@@ -37,17 +37,17 @@ export class ProfileService {
     // );
     return profile;
   }
-  static async updateProfile(email: string, data: any) {
+  static async updateProfile(userId: string, data: any) {
     const profile = await prisma.profile.upsert({
       where: {
-        userId: (await prisma.user.findUnique({ where: { email } }))?.id,
+        id: userId as string,
       },
       update: {
         bio: data.bio,
         portfolio: data.portfolio,
       },
       create: {
-        user: { connect: { email } },
+        user: { connect: { id: userId } },
         bio: data.bio,
         portfolio: data.portfolio,
       },
@@ -59,11 +59,11 @@ export class ProfileService {
     return profile;
   }
   static async basicDetails(
-    email: string,
+    userId: string,
     payload: { username: string; age?: number },
   ) {
     const data = await prisma.user.update({
-      where: { email: email },
+      where: { id: userId },
       data: {
         username: payload.username,
         age: payload.age,
@@ -72,9 +72,9 @@ export class ProfileService {
     // await redis.del(`user:profile:${email}`);
     return data;
   }
-  static async bio(email: string, bioText: string) {
+  static async bio(userId: string, bioText: string) {
     const data = await prisma.user.update({
-      where: { email },
+      where: { id: userId },
       data: {
         profile: {
           upsert: {
@@ -89,9 +89,9 @@ export class ProfileService {
     // await redis.del(`user:profile:${email}`);
     return data;
   }
-  static async locationWeb(email: string, portfolio: string) {
+  static async locationWeb(userId: string, portfolio: string) {
     const data = await prisma.user.update({
-      where: { email },
+      where: { id: userId },
       data: {
         profile: {
           upsert: {
@@ -105,12 +105,12 @@ export class ProfileService {
     return data;
   }
   static async socialLinks(
-    email: string,
+    userId: string,
     payload: { type: SocialPlatform; url: string },
   ) {
     const data = await prisma.profile.update({
       where: {
-        userId: (await prisma.user.findUnique({ where: { email } }))?.id,
+        userId,
       },
       data: {
         socials: {
@@ -128,17 +128,13 @@ export class ProfileService {
     return data;
   }
   static async skillsAndTechnologies(
-    email: string,
+    userId: string,
     payload: { categoryName: string; skill: ISkill },
   ) {
-    const userId = await prisma.user.findUnique({
-      where: { email },
-      include: { profile: true },
-    });
     let category = await prisma.skillCategory.findUnique({
       where: {
         userId_name: {
-          userId: userId?.id as string,
+          userId: userId as string,
           name: payload.categoryName,
         },
       },
@@ -148,10 +144,10 @@ export class ProfileService {
       category = await prisma.skillCategory.create({
         data: {
           name: payload.categoryName,
-          userId: userId?.id as string,
+          userId: userId as string,
           profile: {
             connect: {
-              id: userId?.profile?.id,
+              id: userId,
             },
           },
         },
@@ -173,10 +169,10 @@ export class ProfileService {
 
     return skill;
   }
-  static async projects(email: string, project: IProject) {
+  static async projects(userId: string, project: IProject) {
     const data = await prisma.profile.upsert({
       where: {
-        userId: (await prisma.user.findUnique({ where: { email } }))?.id,
+        userId: userId as string,
       },
       update: {
         projects: {
@@ -188,7 +184,7 @@ export class ProfileService {
           create: project,
         },
         user: {
-          connect: { email },
+          connect: { id: userId },
         },
       },
     });

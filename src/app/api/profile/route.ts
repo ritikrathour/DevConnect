@@ -7,10 +7,10 @@ import { NextRequest } from "next/server";
 export const GET = AsyncHandler(async (req: NextRequest) => {
   logger.info("Profile route hit.");
 
-  const email = req.headers.get("x-user-email");
-  if (!email) {
+  const userId = req.headers.get("x-user-id");
+  if (!userId) {
     throw new ApiError(401, "UnAuthorised user");
   }
-  const profile = await ProfileService.getProfile(email);
+  const profile = await ProfileService.getProfile(userId);
   return Response.json(profile);
 });

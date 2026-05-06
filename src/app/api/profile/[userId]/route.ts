@@ -4,7 +4,7 @@ import { ProfileService } from "@/modules/profile/profile.service";
 
 export const PUT = AsyncHandler(async (req: Request) => {
   const body = await req.json();
-  const userId = req.headers.get("x-user-email"); // from middleware
+  const userId = req.headers.get("x-user-id"); // from middleware
   if (!userId) {
     throw new ApiError(401, "Unauthorised User!");
   }

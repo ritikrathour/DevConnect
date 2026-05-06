@@ -15,8 +15,12 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
       process.env.JWT_REFRESH_SECRET!,
     ) as {
       email: string;
+      userId: string;
     };
-    const accessToken = new TokenService().generateAccessToken(decoded.email);
+    const accessToken = new TokenService().generateAccessToken(
+      decoded.email,
+      decoded.userId,
+    );
     const storeCookies = await cookies();
     storeCookies.set("devConnect_accessToken", accessToken, {
       httpOnly: true,

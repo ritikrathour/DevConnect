@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Image as ImageIcon,
-  Code2,
-  Link as LinkIcon,
-  X,
-  Smile,
-} from "lucide-react";
+import { Image as ImageIcon, X } from "lucide-react";
 import Image from "next/image";
+import { Button } from "@/shared/components/Button";
+import { useMutation } from "@tanstack/react-query";
+import { createPostSchema } from "@/shared/validation/globalValidataion";
+import { FeedService } from "../services/feed.service";
 import toast from "react-hot-toast";
 
 export default function CreatePostCard() {
@@ -43,29 +41,39 @@ export default function CreatePostCard() {
   };
 
   const handlePost = async () => {
-    if (!content.trim()) {
-      toast.error("Please write something!");
-      return;
+    const { success, data } = createPostSchema.safeParse({
+      type: "POST",
+      content,
+      imageUrl: selectedImage,
+      tags,
+    });
+    if (!success) {
+      console.log(data);
+      throw new Error("Validation failed");
     }
-
-    setIsPosting(true);
-
-    try {
-      // TODO: API call to create post
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+    mutate();
+  };
+  // mutate post creation logic here
+  const { mutate, isPending } = useMutation({
+    mutationFn: () =>
+      FeedService.createPost({
+        content,
+        image: selectedImage,
+        tags,
+      }),
+    onSuccess: (data) => {
+      console.log("Post created:", data);
       toast.success("Post created successfully!");
       setContent("");
       setSelectedImage(null);
       setTags([]);
       setIsExpanded(false);
-    } catch (error) {
+    },
+    onError: (error) => {
+      console.error("Error creating post:", error);
       toast.error("Failed to create post");
-    } finally {
-      setIsPosting(false);
-    }
-  };
-
+    },
+  });
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -76,8 +84,8 @@ export default function CreatePostCard() {
       <div className="p-4">
         {/* User Avatar & Input */}
         <div className="flex items-start gap-3">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center text-black font-bold text-lg">
-            U
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-emerald-400 to-cyan-400 flex items-center justify-center text-black font-bold text-lg">
+            DC
           </div>
 
           <div className="flex-1">
@@ -154,7 +162,7 @@ export default function CreatePostCard() {
                       onChange={(e) =>
                         setTagInput(e.target.value.replace(/\s/g, ""))
                       }
-                      onKeyPress={(e) =>
+                      onKeyDown={(e) =>
                         e.key === "Enter" && (e.preventDefault(), addTag())
                       }
                       placeholder="Add tag..."
@@ -191,55 +199,28 @@ export default function CreatePostCard() {
                       <ImageIcon className="w-5 h-5 text-gray-400" />
                     </motion.div>
                   </label>
-
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all"
-                  >
-                    <Code2 className="w-5 h-5 text-gray-400" />
-                  </motion.button>
-
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all"
-                  >
-                    <LinkIcon className="w-5 h-5 text-gray-400" />
-                  </motion.button>
-
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center transition-all"
-                  >
-                    <Smile className="w-5 h-5 text-gray-400" />
-                  </motion.button>
                 </div>
 
                 <div className="flex gap-2">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <Button
+                    type="button"
+                    variant="dark"
                     onClick={() => {
                       setIsExpanded(false);
                       setContent("");
                       setSelectedImage(null);
                       setTags([]);
                     }}
-                    className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all text-sm"
                   >
                     Cancel
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  </Button>
+                  <Button
+                    type="button"
                     onClick={handlePost}
-                    disabled={isPosting || !content.trim()}
-                    className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    disabled={isPending || !content.trim()}
                   >
-                    {isPosting ? "Posting..." : "Post"}
-                  </motion.button>
+                    {isPending ? "Posting..." : "Post"}
+                  </Button>
                 </div>
               </div>
             </motion.div>

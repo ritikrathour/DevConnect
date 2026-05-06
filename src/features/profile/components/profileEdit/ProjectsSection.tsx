@@ -23,9 +23,7 @@ import { IProject } from "../../types";
 
 export default function ProjectsSection() {
   const queryClient = useQueryClient();
-  const { profile, isLoading } = useSelector(
-    (state: RootState) => state.profile,
-  );
+  const { profile } = useSelector((state: RootState) => state.profile);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProject, setEditingProject] = useState<string | null>(null);
   const [formData, setFormData] = useState<IProject>({
@@ -206,6 +204,7 @@ export default function ProjectsSection() {
                       <Button
                         type="button"
                         variant="dark"
+                        disabled={isDeletingProject}
                         onClick={() => deleteProject(project.id)}
                         className={`w-8 h-8 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg`}
                       >

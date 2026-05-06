@@ -4,10 +4,10 @@ import { ApiError } from "next/dist/server/api-utils";
 
 export const PUT = AsyncHandler(async (req: Request) => {
   const body = await req.json();
-  const email = req.headers.get("x-user-email"); // from middleware
-  if (!email) {
+  const userId = req.headers.get("x-user-id"); // from middleware
+  if (!userId) {
     throw new ApiError(401, "Unauthorised User!");
   }
-  const updateBasicDetails = await ProfileService.basicDetails(email, body);
+  const updateBasicDetails = await ProfileService.basicDetails(userId, body);
   return Response.json(updateBasicDetails);
 });

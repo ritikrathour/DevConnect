@@ -22,8 +22,11 @@ export const AuthService = {
       logger.error("user not found with the email", data?.email);
       throw new ApiError(500, "User not created successfully");
     }
-    const accessToken = new TokenService().generateAccessToken(data?.email);
-    const refreshToken = new TokenService().gererateREfresshToken(data);
+    const accessToken = new TokenService().generateAccessToken(
+      user.email,
+      user.id,
+    );
+    const refreshToken = new TokenService().gererateREfresshToken(user);
     logger.info("tokens generated successfully");
     return { user, accessToken, refreshToken };
   },
@@ -40,8 +43,11 @@ export const AuthService = {
       throw new ApiError(403, "Invalid Credentials");
     }
     //  generate tokens
-    const accessToken = new TokenService().generateAccessToken(data?.email);
-    const refreshToken = new TokenService().gererateREfresshToken(data);
+    const accessToken = new TokenService().generateAccessToken(
+      user.email,
+      user.id,
+    );
+    const refreshToken = new TokenService().gererateREfresshToken(user);
     return { accessToken, refreshToken, user };
   },
   currentUser: async (email: string) => {

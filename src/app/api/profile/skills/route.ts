@@ -8,7 +8,7 @@ import { NextRequest } from "next/server";
 export const POST = AsyncHandler(async (req: NextRequest) => {
   logger.info("add skills query received");
   const body = await req.json();
-  const userId = req.headers.get("x-user-email");
+  const userId = req.headers.get("x-user-id");
   if (!userId) {
     logger.error("user not found. UnAuthorised user!");
     throw new ApiError(401, "UnAuthorised user!");

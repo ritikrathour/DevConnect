@@ -8,7 +8,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
   logger.info("project update and add query received");
   const body = await req.json();
   //   const { success, data, error } = addSkillsSchema.safeParse(body);
-  const userId = req.headers.get("x-user-email");
+  const userId = req.headers.get("x-user-id");
   if (!userId) {
     logger.error("user not found. UnAuthorised user!");
     throw new ApiError(401, "UnAuthorised user!");

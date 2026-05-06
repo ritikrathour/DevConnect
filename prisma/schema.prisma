@@ -44,13 +44,16 @@ model User {
   age      Int?
   gender   Gender?
 
-  photoUrl String? @default("https://img.freepik.com/...")
-  coverImage String? @default("")
-  profile Profile?
+  photoUrl   String?  @default("https://img.freepik.com/...")
+  coverImage String?  @default("")
+  profile    Profile?
 
   // ✅ Follow relations
-  followers Follow[] @relation("UserFollowers")
-  following Follow[] @relation("UserFollowing")
+  followers Follow[]  @relation("UserFollowers")
+  following Follow[]  @relation("UserFollowing")
+  posts     Post[]
+  likes     Like[]
+  comments  Comment[]
 
   @@index([createdAt])
   @@map("users")
@@ -78,12 +81,12 @@ model Profile {
 // ─── SKILLS ─────────────────────────────────────────────
 
 model SkillCategory {
-  id    String @id @default(uuid()) // ✅ FIXED
-  name  String 
+  id        String   @id @default(uuid()) // ✅ FIXED
+  name      String
   userId    String
   profileId String
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  skills Skill[]
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skills    Skill[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -91,40 +94,41 @@ model SkillCategory {
 }
 
 model Skill {
-  id         String @id @default(uuid())
+  id         String        @id @default(uuid())
   name       String
-  percentage Int 
+  percentage Int
   categoryId String
   category   SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@unique([name, categoryId])
 }
 
 // ─── PROJECT ─────────────────────────────────────────────
 
 model Project {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  profileId String
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  profileId   String
   title       String
   description String
   githubUrl   String?
   liveUrl     String?
   techStack   String[]
   featured    Boolean  @default(false)
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 // ─── SOCIAL ─────────────────────────────────────────────
 
 model SocialLink {
-  id        String @id @default(uuid())
+  id        String         @id @default(uuid())
   profileId String
-  type SocialPlatform
-  url  String
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  type      SocialPlatform
+  url       String
+  profile   Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 // ─── FOLLOW (FIXED COMPLETELY) ───────────────────────────
@@ -140,4 +144,68 @@ model Follow {
   following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
+}
+
+// ----POST ---------------------------------------------------
+model Post {
+  id       String   @id @default(cuid())
+  content  String? // text content (optional if media exists)
+  images   String[] // array of image URLs
+  authorId String
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  likes     Like[]
+  comments  Comment[]
+  tags      Tag[]     @relation("PostTags")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Optional fields for future scalability
+  isEdited   Boolean        @default(false)
+  visibility PostVisibility @default(PUBLIC)
+
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+enum PostVisibility {
+  PUBLIC
+  PRIVATE
+  CONNECTIONS
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  posts Post[] @relation("PostTags")
+}
+
+// ----------Like & Comment -----------------------------------------
+model Like {
+  id String @id @default(cuid())
+
+  userId String
+  postId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId]) // one like per user per post
+}
+
+model Comment {
+  id String @id @default(cuid())
+
+  content String
+
+  userId String
+  postId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

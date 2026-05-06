@@ -1,10 +1,10 @@
 import { ApiError } from "@/lib/errors/ApiError";
 import { prisma } from "@/lib/prisma";
 
-export const fetchProfile = async (email: string) => {
+export const fetchProfile = async (userId: string) => {
   try {
     const profile = await prisma.user.findUnique({
-      where: { email },
+      where: { id: userId },
       select: {
         id: true,
         username: true,

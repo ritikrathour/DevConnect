@@ -20,6 +20,7 @@ const Header = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { data: user } = useProfile().profile();
+
   const notifications = [
     { id: 1, title: "New connection request", time: "5m ago", unread: true },
     { id: 2, title: "Project update from @john", time: "1h ago", unread: true },
@@ -220,7 +221,7 @@ const Header = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all"
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-semibold rounded-lg transition-all"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Post</span>

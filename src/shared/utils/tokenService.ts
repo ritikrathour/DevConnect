@@ -7,8 +7,8 @@ const ACCESS_TOKEN_TTL = 24 * 60 * 60;
 
 export class TokenService {
   // ── Generate Access Token ─────────────────
-  generateAccessToken(email: string): string {
-    return jwt.sign({ email }, ACCESS_TOKEN_SECRET, {
+  generateAccessToken(email: string, userId: string) {
+    return jwt.sign({ email, userId }, ACCESS_TOKEN_SECRET, {
       expiresIn: ACCESS_TOKEN_TTL,
       algorithm: "HS256",
       issuer: "devConnect",
